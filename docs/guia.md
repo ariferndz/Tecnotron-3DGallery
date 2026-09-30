@@ -172,15 +172,20 @@ La pestaña «Imágenes» de la ficha es un carrusel: empieza por la imagen prin
 
 ![Pestaña «Imágenes» con el carrusel](img/ficha-imagenes.webp)
 
-En el móvil el carrusel se pasa con el dedo; en el ordenador, con flechas, puntos o las teclas ← →. Si la máquina tiene fotos y GLB, la ficha abre por defecto en fotos; se puede cambiar a 3D en Ajustes. Sin fotos, se muestra el icono de su categoría.
+En el móvil el carrusel se pasa con el dedo; en el ordenador, con flechas, puntos o las teclas ← →. Si la máquina tiene modelo 3D, la ficha abre en la pestaña **3D · AR** y al lado está **Imágenes**; sin modelo 3D sólo aparece **Imágenes**. En Ajustes se puede hacer que abra en Imágenes. Sin fotos, se muestra el icono de su categoría.
 
 ## Fichas técnicas en PDF
 
 Cada ficha ofrece siempre una ficha técnica generada con sus datos, y además los PDF que se añadan a mano.
 
-**Ficha generada.** El botón «Ficha técnica · \<máquina>» abre la impresión del navegador con una hoja A4: logo, foto, características, descripción y dibujo de dimensiones. Se guarda con «Guardar como PDF». Se actualiza sola al editar la máquina.
+**Ficha generada.** El botón «Ficha técnica · \<máquina>» descarga al momento un PDF de dos páginas A4, con el estilo de las fichas de fábrica:
 
-<img src="img/ficha-impresa.webp" alt="Ficha técnica impresa en A4" width="400">
+1. **Portada:** fondo de triángulos, franjas diagonales, logo, el nombre en una banda de color, la foto principal grande, una segunda foto en un círculo y un pie oscuro con teléfono, correo, web y dirección.
+2. **Detalle:** el nombre entre comillas, la descripción (con sus negritas y listas) junto a otra foto, «Características técnicas» con un icono por dato y el dibujo de dimensiones a escala con una persona de 1,75 m.
+
+![Ficha técnica en PDF: portada y detalle](img/ficha-pdf.webp)
+
+El PDF se genera en el navegador del visitante con los datos de ese momento: si cambias algo de la máquina, la siguiente descarga ya sale actualizada. Sin fotos, la portada muestra el dibujo de dimensiones en grande. El **color**, el **logo** y los **datos de contacto** del pie se configuran en **Máquinas → Ajustes → Ficha técnica en PDF**. En navegadores muy antiguos, el botón abre la versión para imprimir de antes.
 
 **PDF del fabricante o propios.** Caja **Fichas técnicas en PDF** → **Añadir PDF** → escribir el texto del enlace («Especificaciones técnicas (ITA)») → **Elegir PDF** en la biblioteca, o pegar una dirección https. Se añaden tantos como haga falta y se quitan con **Quitar**. En la web aparecen en «Descargas» y se abren en otra pestaña.
 
@@ -212,13 +217,16 @@ El visitante junta las máquinas que le interesan con el botón + y envía una s
 | --- | --- | --- |
 | Título e introducción | «Nuestras máquinas» y un texto breve | Cabecera del catálogo |
 | Dirección | maquinas | Cambiarla después rompe los QR ya impresos |
-| Vista inicial de la ficha | Carrusel de imágenes | O modelo 3D, si la máquina lo tiene |
+| Vista inicial de la ficha | 3D · AR (si la máquina tiene modelo) | O «Imágenes» |
 | Datos comunes | Atención al cliente: 24/7/365 · Servicio técnico: Propio en toda España | Una línea por dato, formato «Etiqueta: valor»; salen en todas las fichas |
 | Enviar a | El correo del administrador de WordPress | Uno o varios, separados por comas |
 | Copia en el panel | Activada | Guarda cada solicitud en Máquinas → Solicitudes |
 | Política de privacidad | La página de privacidad de WordPress | Enlace de la casilla de consentimiento |
 | Título y texto del bloque de contacto | «Contáctanos» y un texto breve | Encima del formulario |
 | Usar otro formulario | Vacío | Shortcode de vuestro formulario actual |
+| Ficha PDF: color | Morado | Franjas, banda del título y círculos de las características |
+| Ficha PDF: logo | El del tema o el nombre del sitio | PNG o SVG, mejor con fondo transparente; va sobre una placa blanca |
+| Ficha PDF: teléfono, correo, web y dirección | Web del sitio | Pie de la portada; los vacíos no salen |
 
 **Colores y tipografía.** El catálogo usa la tipografía del tema y un diseño oscuro como el de la web actual. Los colores se cambian sin tocar el plugin, con variables en **Apariencia → Personalizar → CSS adicional**; por ejemplo, `.tnm{--tnm-accent:#8b5cf6}` cambia el morado de los botones. Los estilos del tema para botones, campos, listas e imágenes no afectan al catálogo; para cambiar uno de esos elementos desde el CSS adicional, añade `:not(#tnm)` al selector (p. ej. `.tnm-chip:not(#tnm){font-size:14px}`).
 
@@ -261,7 +269,7 @@ El plugin no depende de otros plugins (ni ACF ni constructores) y no carga nada 
 | assets/js/tecnotron-maquinas.js | Filtros, ventana de ficha, carrusel, 3D/AR, QR, ficha impresa y formulario, sin jQuery |
 | assets/css/tecnotron-maquinas.css | Estilos; las reglas de botones, campos, listas e imágenes llevan `:not(#tnm)` para ganar siempre a las del tema |
 | assets/js/admin.js | Pantalla de la máquina: panel de contenido, galería, GLB con vista previa, conversión de OBJ y PDF |
-| assets/vendor/ | model-viewer 4.3.1 (Apache-2.0), qrcode-generator 1.5.2 (MIT) y obj-a-glb.js (conversor OBJ → GLB con three.js 0.183, MIT, generado desde src/obj-a-glb.js); se actualizan con npm y `npm run build` |
+| assets/vendor/ | model-viewer 4.3.1 (Apache-2.0), qrcode-generator 1.5.2 (MIT), ficha-pdf.js (ficha técnica en PDF con pdf-lib 1.17, MIT, generado desde src/ficha-pdf.js) y obj-a-glb.js (conversor OBJ → GLB con three.js 0.183, MIT, generado desde src/obj-a-glb.js); se actualizan con npm y `npm run build` |
 | data/maquinas-configurador.csv | Catálogo inicial |
 
 **Datos de cada máquina** (metadatos de la entrada): \_tnm\_codigo, \_tnm\_consumo, \_tnm\_alimentacion, \_tnm\_conformidad, \_tnm\_peso, \_tnm\_ancho, \_tnm\_largo, \_tnm\_alto (cm), \_tnm\_superficie (m², opcional), \_tnm\_destacada, \_tnm\_galeria (IDs de adjunto), \_tnm\_glb\_id o \_tnm\_glb\_url y \_tnm\_fichas. La descripción es el contenido de la entrada; el orden, menu\_order. Las categorías guardan tnm\_singular, tnm\_color, tnm\_icono y tnm\_orden.

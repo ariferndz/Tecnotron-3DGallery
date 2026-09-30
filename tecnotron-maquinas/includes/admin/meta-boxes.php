@@ -78,6 +78,33 @@ add_action(
 				)
 			);
 		}
+		if ( TNM_CPT . '_page_tnm-ajustes' === $screen->id ) {
+			wp_enqueue_media();
+			// Selector del logo de la ficha PDF
+			wp_add_inline_script(
+				'jquery-core',
+				<<<'JS'
+jQuery(function ($) {
+	let frame;
+	$('[data-tnm-logo-pick]').on('click', function () {
+		frame = frame || wp.media({ title: 'Logo para la ficha PDF', button: { text: 'Usar este logo' }, library: { type: 'image' }, multiple: false });
+		frame.off('select').on('select', function () {
+			const a = frame.state().get('selection').first().toJSON();
+			$('[data-tnm-logo-id]').val(a.id);
+			$('[data-tnm-logo-prev]').html($('<img>').attr('src', ((a.sizes && a.sizes.medium) || a).url));
+			$('[data-tnm-logo-clear]').prop('hidden', false);
+		});
+		frame.open();
+	});
+	$('[data-tnm-logo-clear]').on('click', function () {
+		$('[data-tnm-logo-id]').val('');
+		$('[data-tnm-logo-prev]').empty();
+		$(this).prop('hidden', true);
+	});
+});
+JS
+			);
+		}
 		if ( 'edit-' . TNM_TAX === $screen->id ) {
 			wp_enqueue_style( 'wp-color-picker' );
 			wp_enqueue_script( 'wp-color-picker' );

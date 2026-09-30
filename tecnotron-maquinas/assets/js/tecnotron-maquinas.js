@@ -166,7 +166,7 @@
     };
     $$('[data-tnm-tab]', art).forEach(b => b.addEventListener('click', () => setView(b.dataset.tnmTab)));
     if (art.dataset.vista === '3d') mount3D(art);
-    art.querySelector('[data-tnm-print]')?.addEventListener('click', () => printFicha(art));
+    art.querySelector('[data-tnm-pdf]')?.addEventListener('click', e => descargarPDF(art, e.currentTarget));
     art.querySelector('[data-tnm-share]')?.addEventListener('click', async () => {
       const url = art.dataset.url, title = art.dataset.nombre;
       if (navigator.share) { try { await navigator.share({ title, url }); } catch { /* cancelado */ } return; }
@@ -270,7 +270,36 @@
     stage.appendChild(pop);
   }
 
-  /* ---------- ficha técnica para imprimir o guardar como PDF ---------- */
+  /* ---------- ficha técnica en PDF: se genera en el navegador (assets/vendor/ficha-pdf.js) y se descarga ---------- */
+  async function descargarPDF(art, btn) {
+    if (btn.getAttribute('aria-busy') === 'true') return;
+    const nodo = art.querySelector('[data-tnm-pdf-datos]');
+    if (!nodo || !T.pdf) return printFicha(art);
+    const estado = btn.querySelector('[data-tnm-pdf-estado]');
+    const antes = estado ? estado.textContent : '';
+    btn.setAttribute('aria-busy', 'true');
+    if (estado) estado.textContent = 'Preparando el PDF…';
+    try {
+      const datos = JSON.parse(nodo.textContent);
+      const { fichaPDF } = await import(T.pdf);
+      const blob = await fichaPDF(datos);
+      const url = URL.createObjectURL(blob);
+      const a = Object.assign(document.createElement('a'), { href: url, download: datos.archivo });
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      toast('Ficha técnica descargada');
+    } catch (e) {
+      console.error('Ficha PDF', e);
+      printFicha(art);                                   // navegador antiguo: la versión para imprimir
+    } finally {
+      btn.removeAttribute('aria-busy');
+      if (estado) estado.textContent = antes;
+    }
+  }
+
+  /* ---------- ficha técnica para imprimir (respaldo si el navegador no puede generar el PDF) ---------- */
   function printFicha(art) {
     const img = art.dataset.poster || art.querySelector('.tnm-slide img')?.currentSrc || '';
     const rows = $$('.tnm-spec', art).map(r => `<tr><th>${esc(r.querySelector('dt').textContent)}</th><td>${esc(r.querySelector('dd').firstChild?.textContent || '')}</td></tr>`).join('');

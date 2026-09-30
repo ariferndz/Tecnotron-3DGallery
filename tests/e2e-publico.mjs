@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PDFDocument } from 'pdf-lib';
 import { BASE, CAPTURAS, abrirNavegador, comprobar, diferencias, estilosCalculados, terminar, vigilar } from './comun.mjs';
 
 const navegador = await abrirNavegador();
@@ -37,14 +38,8 @@ try {
   await d.locator('.tnm-card[data-url$="/peppa-bus/"] [data-tnm-open].tnm-pill').click();
   await d.waitForSelector('[data-tnm-modal] [data-tnm-ficha]');
   comprobar(d.url().endsWith('/maquinas/peppa-bus/'), 'abrir la ficha cambia la dirección', d.url());
-  await d.waitForTimeout(600);
-  await shot(d, '2-ficha-imagenes');
-  await d.click('[data-tnm-modal] [data-tnm-car="1"]');
-  await d.waitForTimeout(700);
-  const cuenta = (await d.textContent('[data-tnm-modal] [data-tnm-car-count]')).replace(/\s/g, '');
-  comprobar(cuenta === '2/4', 'el carrusel avanza', cuenta);
-
-  await d.click('[data-tnm-modal] [data-tnm-tab="3d"]');
+  const pestanas = await d.$$eval('[data-tnm-modal] [data-tnm-tab]', bs => bs.map(b => `${b.dataset.tnmTab}${b.getAttribute('aria-selected') === 'true' ? '*' : ''}`).join(' '));
+  comprobar(pestanas === '3d* imagenes', 'con modelo 3D la ficha abre en «3D · AR», con «Imágenes» al lado', pestanas);
   await d.waitForFunction(() => document.querySelector('[data-tnm-modal] model-viewer')?.loaded, null, { timeout: 60000 });
   await d.waitForTimeout(1200);
   const nota = await d.textContent('[data-tnm-modal] .tnm-stage-note');
@@ -53,6 +48,13 @@ try {
   await d.waitForSelector('.tnm-qr-pop svg');
   comprobar(true, 'se genera el QR del visor');
   await shot(d, '3-ficha-3d-qr');
+  await d.click('[data-tnm-modal] [data-tnm-tab="imagenes"]');
+  await d.waitForTimeout(500);
+  await shot(d, '2-ficha-imagenes');
+  await d.click('[data-tnm-modal] [data-tnm-car="1"]');
+  await d.waitForTimeout(700);
+  const cuenta = (await d.textContent('[data-tnm-modal] [data-tnm-car-count]')).replace(/\s/g, '');
+  comprobar(cuenta === '2/4', 'en «Imágenes» el carrusel avanza', cuenta);
   await d.click('[data-tnm-modal] [data-tnm-next]');
   await d.waitForTimeout(900);
   comprobar(!d.url().endsWith('/peppa-bus/'), '«siguiente» pasa a otra máquina', d.url());
@@ -89,15 +91,18 @@ try {
   comprobar((await d.locator('.tnm-spec').count()) === 8, 'la ficha de Diggy tiene los 8 datos técnicos', await d.locator('.tnm-spec').count());
   comprobar((await d.locator('script[type="application/ld+json"]').count()) === 1, 'incluye datos de producto para Google (JSON-LD)');
   comprobar((await d.inputValue('[data-tnm-maquinas]')) !== '', 'el formulario llega con la máquina preseleccionada');
+  const soloImagenes = await d.$$eval('.tnm-ficha--pagina [data-tnm-tab]', bs => bs.map(b => b.dataset.tnmTab).join(' '));
+  comprobar(soloImagenes === 'imagenes', 'sin modelo 3D sólo aparece la pestaña «Imágenes»', soloImagenes);
+  const icono = await d.$eval('.tnm-dl .tnm-fi', e => Math.round(e.getBoundingClientRect().width));
+  comprobar(icono === 40, 'en «Descargas» el icono no se estira', `${icono} px`);
   await shot(d, '5-diggy', { fullPage: true });
-  await d.evaluate(() => { window.print = () => {}; });
-  await d.click('[data-tnm-print]');
-  await d.setViewportSize({ width: 794, height: 1123 });
-  await d.emulateMedia({ media: 'print' });
-  await d.waitForTimeout(300);
-  await shot(d, '6-ficha-impresa', { fullPage: true });
-  await d.emulateMedia({ media: 'screen' });
-  await d.setViewportSize({ width: 1440, height: 900 });
+  const descarga = d.waitForEvent('download', { timeout: 60000 });
+  await d.click('[data-tnm-pdf]');
+  const pdf = await descarga;
+  const bytes = fs.readFileSync(await pdf.path());
+  const paginas = (await PDFDocument.load(bytes)).getPageCount();
+  comprobar(pdf.suggestedFilename() === 'ficha-tecnica-diggy.pdf' && paginas === 2, 'la ficha técnica se descarga como PDF de 2 páginas', `${pdf.suggestedFilename()}, ${paginas} páginas, ${Math.round(bytes.length / 1024)} KB`);
+  fs.writeFileSync(`${CAPTURAS}/ficha-tecnica-diggy.pdf`, bytes);
 
   await d.goto(BASE + '/maquinas/grua-de-tren/');
   comprobar((await d.locator('.tnm-dl[href$=".pdf"]').count()) === 2, 'la Grúa de tren ofrece sus 2 fichas PDF');
@@ -117,7 +122,9 @@ try {
   for (const [estado, preparar] of [['catálogo', async () => {}], ['ficha abierta', async () => {
     await t.locator('.tnm-card[data-url$="/peppa-bus/"] [data-tnm-open].tnm-pill').click();
     await t.waitForSelector('[data-tnm-modal] [data-tnm-ficha]');
-    await t.waitForTimeout(600);
+    // Abre en 3D: se mide cuando el modelo ya ha cargado (al cargar aparece la nota «A escala real»)
+    await t.waitForFunction(() => document.querySelector('[data-tnm-modal] model-viewer')?.loaded && document.querySelector('[data-tnm-modal] .tnm-stage-note'), null, { timeout: 60000 });
+    await t.waitForTimeout(800);
   }]]) {
     await preparar();
     await t.mouse.move(0, 0);

@@ -199,7 +199,15 @@ function tnm_render_card( $m, $i = 0 ) {
 function tnm_render_ficha( $m, $context = 'pagina' ) {
 	$post  = get_post( $m['id'] );
 	$h     = 'pagina' === $context ? 'h1' : 'h2';
-	$vista = ( '3d' === tnm_opt( 'vista_inicial' ) && $m['glb'] ) || ( ! $m['imagenes'] && $m['glb'] ) ? '3d' : 'imagenes';
+	// Con modelo 3D la ficha abre en «3D · AR» (salvo que Ajustes diga «Imágenes»); sin modelo sólo hay «Imágenes».
+	$vista = $m['glb'] && ( '3d' === tnm_opt( 'vista_ficha' ) || ! $m['imagenes'] ) ? '3d' : 'imagenes';
+	$tabs  = array();
+	if ( $m['glb'] ) {
+		$tabs['3d'] = array( 'cube', '3D · AR' );
+	}
+	if ( $m['imagenes'] || ! $m['glb'] ) {
+		$tabs['imagenes'] = array( 'image', 'Imágenes' );
+	}
 	$desc  = tnm_render_descripcion( $post );
 	$data  = array(
 		'data-id'     => $m['id'],
@@ -221,12 +229,11 @@ function tnm_render_ficha( $m, $context = 'pagina' ) {
 	?>
 	<article class="tnm tnm-ficha tnm-ficha--<?php echo esc_attr( $context ); ?>" data-tnm-ficha<?php echo $a; // phpcs:ignore ?>>
 		<div class="tnm-f-media">
-			<?php if ( $m['glb'] && $m['imagenes'] ) : ?>
 			<div class="tnm-f-tabs" role="tablist" aria-label="Vista">
-				<button type="button" role="tab" data-tnm-tab="imagenes" aria-selected="<?php echo 'imagenes' === $vista ? 'true' : 'false'; ?>"><?php echo tnm_icon( 'image' ); ?>Imágenes</button>
-				<button type="button" role="tab" data-tnm-tab="3d" aria-selected="<?php echo '3d' === $vista ? 'true' : 'false'; ?>"><?php echo tnm_icon( 'cube' ); ?>3D · AR</button>
+				<?php foreach ( $tabs as $k => list( $icon, $label ) ) : ?>
+					<button type="button" role="tab" data-tnm-tab="<?php echo esc_attr( $k ); ?>" aria-selected="<?php echo $k === $vista ? 'true' : 'false'; ?>"><?php echo tnm_icon( $icon ); ?><?php echo esc_html( $label ); ?></button>
+				<?php endforeach; ?>
 			</div>
-			<?php endif; ?>
 			<div class="tnm-f-stage">
 				<div class="tnm-f-view" data-tnm-view="imagenes"<?php echo 'imagenes' === $vista ? '' : ' hidden'; ?>><?php echo tnm_render_carousel( $m ); // phpcs:ignore ?></div>
 				<?php if ( $m['glb'] ) : ?><div class="tnm-f-view tnm-f-3d" data-tnm-view="3d"<?php echo '3d' === $vista ? '' : ' hidden'; ?>></div><?php endif; ?>
@@ -250,10 +257,11 @@ function tnm_render_ficha( $m, $context = 'pagina' ) {
 			<section class="tnm-f-sec"><h3 class="tnm-f-h">Descargas</h3>
 				<ul class="tnm-downloads">
 					<?php foreach ( $m['fichas'] as $f ) : ?>
-						<li><a class="tnm-dl" href="<?php echo esc_url( $f['url'] ); ?>" target="_blank" rel="noopener"><span class="tnm-fi"><?php echo tnm_icon( 'file' ); ?></span><span><b><?php echo esc_html( $f['label'] ); ?></b><small>PDF</small></span><?php echo tnm_icon( 'download' ); ?></a></li>
+						<li><a class="tnm-dl" href="<?php echo esc_url( $f['url'] ); ?>" target="_blank" rel="noopener"><span class="tnm-fi"><?php echo tnm_icon( 'file' ); ?></span><span class="tnm-dl-txt"><b><?php echo esc_html( $f['label'] ); ?></b><small>PDF</small></span><?php echo tnm_icon( 'download' ); ?></a></li>
 					<?php endforeach; ?>
-					<li><button type="button" class="tnm-dl" data-tnm-print><span class="tnm-fi"><?php echo tnm_icon( 'file' ); ?></span><span><b>Ficha técnica · <?php echo esc_html( $m['nombre'] ); ?></b><small>PDF con descripción, características y dimensiones</small></span><?php echo tnm_icon( 'download' ); ?></button></li>
+					<li><button type="button" class="tnm-dl" data-tnm-pdf><span class="tnm-fi"><?php echo tnm_icon( 'file' ); ?></span><span class="tnm-dl-txt"><b>Ficha técnica · <?php echo esc_html( $m['nombre'] ); ?></b><small data-tnm-pdf-estado>PDF con fotos, descripción, características y dimensiones</small></span><?php echo tnm_icon( 'download' ); ?></button></li>
 				</ul>
+				<script type="application/json" data-tnm-pdf-datos><?php echo wp_json_encode( tnm_pdf_datos( $m, $desc ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP ); ?></script>
 			</section>
 		</div>
 		<div class="tnm-f-bar">
@@ -339,6 +347,50 @@ function tnm_spec_rows( $m ) {
 		$rows[] = array( $icon, $label, $value, '' );
 	}
 	return $rows;
+}
+
+/**
+ * Datos para generar la ficha técnica en PDF en el navegador (assets/vendor/ficha-pdf.js, desde src/ficha-pdf.js).
+ *
+ * @param array  $m    Máquina.
+ * @param string $desc Descripción ya en HTML.
+ * @return array
+ */
+function tnm_pdf_datos( $m, $desc ) {
+	$paths = tnm_icon_paths();
+	$specs = array();
+	foreach ( tnm_spec_rows( $m ) as list( $icon, $label, $value, $note ) ) {
+		$specs[] = array(
+			'icono'    => $paths[ $icon ] ?? $paths['check'],
+			'etiqueta' => $label,
+			'valor'    => $value,
+			'nota'     => $note,
+		);
+	}
+	$logo = (int) tnm_opt( 'pdf_logo' ) ?: (int) get_theme_mod( 'custom_logo' );
+	$web  = trim( (string) tnm_opt( 'pdf_web' ) ) ?: wp_parse_url( home_url(), PHP_URL_HOST );
+	return array(
+		'archivo'     => 'ficha-tecnica-' . $m['slug'] . '.pdf',
+		'nombre'      => $m['nombre'],
+		'categoria'   => $m['cat']['singular'],
+		'codigo'      => $m['codigo'],
+		'descripcion' => $desc,
+		'specs'       => $specs,
+		'medidas'     => $m['tiene_medidas'] ? array( (float) $m['ancho'], (float) $m['largo'], (float) $m['alto'] ) : null,
+		'imagenes'    => array_values( array_filter( array_map( fn( $id ) => wp_get_attachment_image_url( $id, 'large' ), $m['imagenes'] ) ) ),
+		'url'         => $m['url'],
+		'fecha'       => wp_date( 'j/n/Y' ),
+		'color'       => tnm_opt( 'pdf_color' ),
+		'empresa'     => array(
+			'nombre'    => get_bloginfo( 'name' ),
+			'logo'      => $logo ? wp_get_attachment_image_url( $logo, 'medium_large' ) : '',
+			'telefono'  => tnm_opt( 'pdf_telefono' ),
+			'email'     => tnm_opt( 'pdf_email' ),
+			'web'       => $web,
+			'direccion' => tnm_opt( 'pdf_direccion' ),
+		),
+		'iconos'      => array_intersect_key( $paths, array_flip( array( 'phone', 'mail', 'globe', 'pin' ) ) ) + array( 'categoria' => $paths[ $m['cat']['icono'] ] ?? $paths['cube'] ),
+	);
 }
 
 /**

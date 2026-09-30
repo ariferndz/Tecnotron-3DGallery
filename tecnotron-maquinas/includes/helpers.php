@@ -24,13 +24,20 @@ function tnm_opt( $key = null ) {
 		'titulo'             => 'Nuestras máquinas',
 		'intro'              => 'Kiddie rides, carruseles, grúas y juegos de habilidad. Consulta las características, descarga la ficha técnica y pide presupuesto sin compromiso.',
 		'comunes'            => "Atención al cliente: 24/7/365\nServicio técnico: Propio en toda España",
-		'vista_inicial'      => 'imagenes',
+		'vista_ficha'        => '3d',
 		'email'              => get_option( 'admin_email' ),
 		'guardar'            => 1,
 		'form_shortcode'     => '',
 		'privacidad_url'     => '',
 		'contacto_titulo'    => 'Contáctanos',
 		'contacto_texto'     => 'Cuéntanos qué espacio tienes y qué máquinas te interesan. Te enviamos la ficha técnica y un presupuesto a medida.',
+		// Ficha técnica en PDF
+		'pdf_color'          => '#7c3aed',
+		'pdf_logo'           => 0,
+		'pdf_telefono'       => '',
+		'pdf_email'          => '',
+		'pdf_web'            => '',
+		'pdf_direccion'      => '',
 	);
 	$saved = get_option( TNM_OPT, array() );
 	$all   = wp_parse_args( is_array( $saved ) ? $saved : array(), $defaults );
@@ -296,6 +303,7 @@ function tnm_icon_paths() {
 		'box'      => '<path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
 		'area'     => '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16" stroke-dasharray="2 2.5"/>',
 		'headset'  => '<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/><path d="M19 20a3 3 0 0 1-3 2h-2"/>',
+		'globe'    => '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
 		'wrench'   => '<path d="M14.7 6.3a4 4 0 0 1 5-1l-3 3 .5 2 2 .5 3-3a4 4 0 0 1-5.3 5.3L9.5 20.5a2.1 2.1 0 0 1-3-3l7.4-7.4a4 4 0 0 1 .8-3.8z"/>',
 		'car'      => '<path d="M3 16v-3l2.2-5A2 2 0 0 1 7 7h10a2 2 0 0 1 1.8 1l2.2 5v3z"/><path d="M3 13h18"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/>',
 		'carousel' => '<path d="M3 9 12 3l9 6z"/><path d="M5 9v10M12 9v10M19 9v10M3 20h18"/><circle cx="8.5" cy="14" r="1.6"/><circle cx="15.5" cy="12.5" r="1.6"/>',

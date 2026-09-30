@@ -95,6 +95,13 @@ try {
   comprobar((await p.locator('#the-list tr').count()) === 5, 'hay 5 categorías');
   await shot(p, '5-categorias');
   await p.goto(BASE + '/wp-admin/edit.php?post_type=tn_maquina&page=tnm-ajustes');
+  comprobar((await p.inputValue('select[name="tnm_ajustes[vista_ficha]"]')) === '3d', 'la vista inicial por defecto es «3D · AR»');
+  comprobar((await p.locator('[data-tnm-logo-pick]').count()) === 1, 'Ajustes tiene el selector de logo para el PDF');
+  await p.fill('input[name="tnm_ajustes[pdf_telefono]"]', '+34 900 000 000');
+  await p.fill('textarea[name="tnm_ajustes[pdf_direccion]"]', 'Calle Mayor, 1\n28001 Madrid');
+  await p.click('#submit');
+  await p.waitForSelector('#setting-error-settings_updated');
+  comprobar((await p.inputValue('input[name="tnm_ajustes[pdf_telefono]"]')) === '+34 900 000 000', 'se guardan los datos de contacto del PDF');
   await shot(p, '6-ajustes', { fullPage: true });
   await p.goto(BASE + '/wp-admin/edit.php?post_type=tn_maquina&page=tnm-importar');
   await shot(p, '7-importar', { fullPage: true });

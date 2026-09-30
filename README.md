@@ -19,7 +19,7 @@ tecnotron-maquinas/     Código fuente del plugin (es exactamente lo que va dent
 dist/                   tecnotron-maquinas.zip, generado con «npm run build»
 modelos/                GLB optimizados a tamaño real y sus 4 imágenes (Block Car, Peppa Bus, Bluey Family Car)
 scripts/                build.mjs (zip del plugin), optimizar-glb.mjs, imagenes-glb.mjs, prototipo.mjs
-src/                    obj-a-glb.js: conversor OBJ → GLB del escritorio (build lo empaqueta con three.js)
+src/                    ficha-pdf.js (ficha técnica en PDF) y obj-a-glb.js (conversor OBJ → GLB); build los empaqueta con pdf-lib y three.js
 tests/                  Pruebas en navegador (web pública y escritorio), CSS de un «tema agresivo», OBJ de prueba y datos de demostración
 dev/mu-plugins/         Ajustes sólo para el entorno de desarrollo
 prototipo/              Maqueta HTML aprobada antes de hacer el plugin
@@ -55,8 +55,8 @@ npm run build     # → dist/tecnotron-maquinas.zip
 
 `npm run build` ([scripts/build.mjs](scripts/build.mjs)):
 
-1. Copia las librerías de terceros desde `node_modules` a `tecnotron-maquinas/assets/vendor/`: **model-viewer** (visor 3D y realidad aumentada) y **qrcode-generator** (QR), y empaqueta con esbuild el **conversor de OBJ** ([src/obj-a-glb.js](src/obj-a-glb.js)) con la parte de **three.js** que usa, en `assets/vendor/obj-a-glb.js`.
-2. Comprueba que sus versiones coinciden con las constantes `TNM_MV_VERSION`, `TNM_QR_VERSION` y `TNM_THREE_VERSION` del plugin y con `readme.txt`.
+1. Copia las librerías de terceros desde `node_modules` a `tecnotron-maquinas/assets/vendor/`: **model-viewer** (visor 3D y realidad aumentada) y **qrcode-generator** (QR), y empaqueta con esbuild el código propio que usa librerías de npm: la **ficha técnica en PDF** ([src/ficha-pdf.js](src/ficha-pdf.js)) con **pdf-lib**, en `assets/vendor/ficha-pdf.js`, y el **conversor de OBJ** ([src/obj-a-glb.js](src/obj-a-glb.js)) con la parte de **three.js** que usa, en `assets/vendor/obj-a-glb.js`.
+2. Comprueba que sus versiones coinciden con las constantes `TNM_MV_VERSION`, `TNM_QR_VERSION`, `TNM_THREE_VERSION` y `TNM_PDFLIB_VERSION` del plugin y con `readme.txt`.
 3. Comprueba que la versión del plugin es la misma en la cabecera de `tecnotron-maquinas.php`, en `TNM_VERSION` y en el `Stable tag` de `readme.txt`.
 4. Revisa la sintaxis de los PHP.
 5. Empaqueta la carpeta en `dist/tecnotron-maquinas.zip`. El zip es reproducible: con el mismo código sale idéntico byte a byte en Windows, macOS o Linux, así que la integración continua puede comprobar que el zip subido está al día.
@@ -134,10 +134,11 @@ npm test                           # o npm run test:publico / npm run test:admin
 | 42 tarjetas, buscador, filtros de categoría y «con 3D» | Listado con la columna «Contenido de la ficha» y el enlace «Imágenes, ficha y 3D» |
 | Con el CSS de un tema agresivo ([tests/tema-agresivo.css](tests/tema-agresivo.css)) el catálogo y la ficha no cambian ni un píxel; píldoras de datos de igual altura | Panel «Contenido de la ficha» y cajas siempre visibles |
 | | Convertir un OBJ con su MTL y textura ([tests/fixtures/](tests/fixtures/)), guardarlo y quitarlo |
-| Ficha en ventana: cambia la dirección, carrusel, siguiente/anterior | Vista previa del GLB y aviso de tamaño |
+| Ficha en ventana: cambia la dirección, abre en «3D · AR» con «Imágenes» al lado, carrusel, siguiente/anterior | Vista previa del GLB y aviso de tamaño |
 | Modelo 3D a escala real y QR del visor | Guardar consumo, peso y PDF; la API lo refleja |
 | Solicitud: bandeja, validación de los 5 campos y envío | 5 categorías, ajustes |
 | Página de máquina: 8 datos, JSON-LD, preselección, ficha impresa | Exportar CSV y reimportarlo (42 actualizadas, 0 errores) |
+| Sin 3D sólo la pestaña «Imágenes»; icono de «Descargas» sin estirar; la ficha técnica se descarga como PDF de 2 páginas | Ajustes: vista «3D · AR» por defecto, logo y contacto del PDF |
 | PDF, página de categoría, API | Solicitudes y filtro «Modelos 3D» de Medios |
 | Móvil: sin desplazamiento lateral, ficha y visor del QR | Sin errores de JavaScript ni HTTP |
 
@@ -171,6 +172,7 @@ npm run prototipo    # → prototipo/catalogo-maquinas.html (≈ 6,5 MB, incluye
 - Filtro `tnm_solicitudes_por_hora` para cambiar el límite antispam del formulario (5 por hora e IP).
 - A prueba de temas: las reglas CSS de botones, campos, listas e imágenes llevan `:not(#tnm)`, que les da la fuerza de un id sin cambiar a qué se aplican. Así el tema no las pisa. Si añades una regla para uno de esos elementos, pónselo también; `npm test` lo comprueba con [tests/tema-agresivo.css](tests/tema-agresivo.css).
 - Pantalla de la máquina a prueba de plugins: editor clásico aunque otro plugin active el de bloques, sin «Editar con Elementor», «Imagen principal» aunque el tema no la declare y cajas que no se pueden ocultar.
+- Ficha técnica en PDF generada en el navegador ([src/ficha-pdf.js](src/ficha-pdf.js)) con pdf-lib: dos páginas A4 vectoriales (fondo, franjas, banda del título, iconos, dibujo de dimensiones) con las fotos incrustadas; los datos le llegan en un `<script type="application/json">` dentro de la ficha (`tnm_pdf_datos()`).
 - Conversor OBJ → GLB en el navegador ([src/obj-a-glb.js](src/obj-a-glb.js)): carga el OBJ con su MTL y texturas con three.js, pasa los materiales a PBR, escala, apoya en el suelo y exporta GLB; sube el resultado con la API REST de Medios.
 
 El detalle de cada archivo, los datos que guarda cada máquina y la API están en [Estructura técnica](docs/guia.md#estructura-técnica).
@@ -178,5 +180,5 @@ El detalle de cada archivo, los datos que guarda cada máquina y la API están e
 ## Licencias
 
 - Plugin y herramientas: [GPL-2.0-or-later](LICENSE), como WordPress.
-- [model-viewer](https://github.com/google/model-viewer) (Google, Apache-2.0), [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) (Kazuhiko Arase, MIT) y [three.js](https://threejs.org) (MIT, dentro del conversor de OBJ): sus licencias van en `tecnotron-maquinas/assets/vendor/`.
+- [model-viewer](https://github.com/google/model-viewer) (Google, Apache-2.0), [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) (Kazuhiko Arase, MIT) y [three.js](https://threejs.org) (MIT, dentro del conversor de OBJ) y [pdf-lib](https://pdf-lib.js.org) (MIT, dentro de la ficha en PDF): sus licencias van en `tecnotron-maquinas/assets/vendor/`.
 - Los modelos 3D, las imágenes y los datos de las máquinas son material de Tecnotron. Los personajes (Peppa Pig, Bluey…) son marcas de sus titulares.

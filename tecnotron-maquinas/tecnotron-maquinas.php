@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Tecnotron Máquinas
  * Description:       Catálogo de máquinas con ficha técnica, galería, visor 3D con realidad aumentada, fichas PDF y solicitudes de presupuesto.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Requires at least: 6.2
  * Requires PHP:      7.4
  * Author:            FastCore para Tecnotron
@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'TNM_VERSION', '1.1.0' );
+define( 'TNM_VERSION', '1.2.0' );
 define( 'TNM_FILE', __FILE__ );
 define( 'TNM_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TNM_URL', plugin_dir_url( __FILE__ ) );
@@ -22,6 +22,7 @@ define( 'TNM_URL', plugin_dir_url( __FILE__ ) );
 define( 'TNM_MV_VERSION', '4.3.1' );
 define( 'TNM_QR_VERSION', '1.5.2' );
 define( 'TNM_THREE_VERSION', '0.183.2' ); // Dentro de assets/vendor/obj-a-glb.js (conversor OBJ → GLB).
+define( 'TNM_PDFLIB_VERSION', '1.17.1' ); // Dentro de assets/vendor/ficha-pdf.js (ficha técnica en PDF).
 
 require_once TNM_DIR . 'includes/helpers.php';
 require_once TNM_DIR . 'includes/post-types.php';

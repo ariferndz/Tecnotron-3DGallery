@@ -121,6 +121,7 @@ add_action(
 				'rest'   => esc_url_raw( rest_url( 'tecnotron/v1/' ) ),
 				'mv'     => TNM_URL . 'assets/vendor/model-viewer.min.js?ver=' . TNM_MV_VERSION,
 				'qr'     => TNM_URL . 'assets/vendor/qrcode.js?ver=' . TNM_QR_VERSION,
+				'pdf'    => TNM_URL . 'assets/vendor/ficha-pdf.js?ver=' . TNM_VERSION,
 				'base'   => get_post_type_archive_link( TNM_CPT ),
 				'site'   => get_bloginfo( 'name' ),
 				'icons'  => $icons,

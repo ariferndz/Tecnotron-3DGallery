@@ -5,7 +5,8 @@
 //
 // 1. Copia las librerías de terceros desde node_modules a tecnotron-maquinas/assets/vendor/
 //    y comprueba que sus versiones coinciden con las del plugin (TNM_MV_VERSION, TNM_QR_VERSION y readme.txt).
-//    Empaqueta el conversor de OBJ a GLB (src/obj-a-glb.js + three.js) en assets/vendor/obj-a-glb.js.
+//    Empaqueta el conversor de OBJ a GLB (src/obj-a-glb.js + three.js) en assets/vendor/obj-a-glb.js
+//    y la ficha técnica en PDF (src/ficha-pdf.js + pdf-lib) en assets/vendor/ficha-pdf.js.
 // 2. Comprueba que la versión del plugin es la misma en la cabecera, en TNM_VERSION y en readme.txt.
 // 3. Revisa la sintaxis de todos los PHP (si hay PHP instalado).
 // 4. Empaqueta la carpeta en un zip reproducible: mismo contenido → mismo zip, byte a byte.
@@ -59,6 +60,12 @@ const vendor = [
     archivos: { LICENSE: 'LICENSE-three.txt' },
   },
   {
+    nombre: 'pdf-lib',
+    paquete: 'pdf-lib',
+    constante: 'TNM_PDFLIB_VERSION',
+    archivos: { 'LICENSE.md': 'LICENSE-pdf-lib.txt' },
+  },
+  {
     nombre: 'qrcode-generator',
     paquete: 'qrcode-generator',
     constante: 'TNM_QR_VERSION',
@@ -78,20 +85,25 @@ for (const v of vendor) {
   console.log(`✓ ${v.nombre} ${instalada} → assets/vendor/`);
 }
 
-// Conversor OBJ → GLB del escritorio: sólo lo que usa de three.js, en un archivo minificado
-const conversor = await build({
-  entryPoints: [path.join(ROOT, 'src/obj-a-glb.js')],
-  bundle: true,
-  format: 'esm',
-  minify: true,
-  target: ['es2020'],
-  legalComments: 'none',
-  banner: { js: `/* Conversor OBJ → GLB de Tecnotron Máquinas (src/obj-a-glb.js). Incluye three.js ${pkgVersion('three')}, MIT: ver LICENSE-three.txt */` },
-  write: false,
-  logLevel: 'error',
-});
-fs.writeFileSync(path.join(PLUGIN, 'assets/vendor/obj-a-glb.js'), conversor.outputFiles[0].text);
-console.log(`✓ conversor OBJ → GLB → assets/vendor/obj-a-glb.js (${Math.round(conversor.outputFiles[0].text.length / 1024)} KB)`);
+// Código propio que usa librerías de npm: sólo lo que necesita de ellas, en un archivo minificado por herramienta
+for (const [fuente, destino, que, libreria] of [
+  ['src/obj-a-glb.js', 'obj-a-glb.js', 'conversor OBJ → GLB', `three.js ${pkgVersion('three')}, MIT: ver LICENSE-three.txt`],
+  ['src/ficha-pdf.js', 'ficha-pdf.js', 'ficha técnica en PDF', `pdf-lib ${pkgVersion('pdf-lib')}, MIT: ver LICENSE-pdf-lib.txt`],
+]) {
+  const r = await build({
+    entryPoints: [path.join(ROOT, fuente)],
+    bundle: true,
+    format: 'esm',
+    minify: true,
+    target: ['es2020'],
+    legalComments: 'none',
+    banner: { js: `/* ${que} de Tecnotron Máquinas (${fuente}). Incluye ${libreria} */` },
+    write: false,
+    logLevel: 'error',
+  });
+  fs.writeFileSync(path.join(PLUGIN, 'assets/vendor', destino), r.outputFiles[0].text);
+  console.log(`✓ ${que} → assets/vendor/${destino} (${Math.round(r.outputFiles[0].text.length / 1024)} KB)`);
+}
 
 /* 2. Versión del plugin */
 const cabecera = buscar(principal, /^\s*\*\s*Version:\s*(\S+)/m, 'la línea «Version:» de la cabecera');
