@@ -1,7 +1,7 @@
 === Tecnotron Máquinas ===
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 
 Catálogo de máquinas con ficha técnica, carrusel de imágenes, visor 3D con realidad aumentada (model-viewer), QR, fichas PDF y solicitudes de presupuesto.
@@ -27,6 +27,20 @@ Catálogo de máquinas con ficha técnica, carrusel de imágenes, visor 3D con r
 == Terceros ==
 * model-viewer 4.3.1 (Google, Apache-2.0): assets/vendor/model-viewer.min.js
 * qrcode-generator 1.5.2 (Kazuhiko Arase, MIT): assets/vendor/qrcode.js
+* three.js 0.183.2 (MIT): dentro de assets/vendor/obj-a-glb.js, el conversor de OBJ a GLB del escritorio
+
+== Cambios ==
+= 1.1.0 =
+* El catálogo se ve igual con cualquier tema: botones, buscador, campos, listas e imágenes ya no heredan estilos del tema.
+* Las píldoras de datos del catálogo tienen todas la misma altura.
+* Pantalla de la máquina: panel «Contenido de la ficha» con lo que falta (imagen principal, galería, datos, modelo 3D, PDF) y enlaces a cada caja.
+* Las cajas de la máquina se muestran siempre: editor clásico aunque otro plugin active el de bloques, sin «Editar con Elementor» y con «Imagen principal» aunque el tema no la declare.
+* Modelo 3D: se puede subir un OBJ (con su .mtl y texturas); se convierte a GLB en el navegador y se escala a las medidas de la ficha.
+* Listado de máquinas: columna «Contenido» con lo que tiene cada una.
+* Filtro tnm_solicitudes_por_hora para cambiar el límite antispam del formulario.
+
+= 1.0.0 =
+* Primera versión.
 
 == Datos ==
 Desactivar o borrar el plugin no borra máquinas, categorías, imágenes ni solicitudes.

@@ -84,12 +84,26 @@
     const dlg = root.querySelector('[data-tnm-modal]'); if (!dlg || !T.rest) return;
     const body = dlg.querySelector('[data-tnm-modal-body]'), crumb = dlg.querySelector('[data-tnm-crumb]');
     const cache = new Map();
-    let current = null, pushed = false;
+    let current = null, pushed = false, cerrada = true;
     const base = location.pathname + location.search;
+
+    // Deja la página como estaba (dirección, título, visor 3D). Se llama en cuanto se pide cerrar: el evento «close»
+    // del navegador puede llegar más de un segundo después si el hilo principal está ocupado dibujando el 3D.
+    function alCerrar() {
+      if (cerrada) return;
+      cerrada = true;
+      body.innerHTML = '';                             // libera el visor 3D
+      current = null;
+      document.title = dlg.dataset.title || document.title;
+      if (history.state && history.state.tnm) { if (pushed) history.back(); else history.replaceState(null, '', base); }
+      pushed = false;
+    }
+    function cerrar() { alCerrar(); if (dlg.open) dlg.close(); }
 
     async function open(card, { push = true } = {}) {
       const id = card.dataset.id;
       current = card;
+      cerrada = false;
       crumb.textContent = `Productos · ${card.querySelector('.tnm-card-cat')?.textContent || ''}`;
       body.innerHTML = '<div class="tnm-loading">Cargando ficha…</div>';
       if (!dlg.open) dlg.showModal();
@@ -120,30 +134,25 @@
       e.preventDefault();
       open(a.closest('.tnm-card'));
     });
-    dlg.querySelector('[data-tnm-close]').addEventListener('click', () => dlg.close());
+    dlg.querySelector('[data-tnm-close]').addEventListener('click', cerrar);
     dlg.querySelector('[data-tnm-prev]').addEventListener('click', () => { const c = neighbour(-1); if (c) open(c, { push: false }); });
     dlg.querySelector('[data-tnm-next]').addEventListener('click', () => { const c = neighbour(1); if (c) open(c, { push: false }); });
-    dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('click', e => { if (e.target === dlg) cerrar(); });
     dlg.addEventListener('keydown', e => {
       if (e.target.closest('input, textarea, select, model-viewer, .tnm-slides')) return;
       if (e.key === 'ArrowLeft') dlg.querySelector('[data-tnm-prev]').click();
       if (e.key === 'ArrowRight') dlg.querySelector('[data-tnm-next]').click();
     });
-    dlg.addEventListener('close', () => {
-      body.innerHTML = '';                             // libera el visor 3D
-      current = null;
-      document.title = dlg.dataset.title || document.title;
-      if (history.state && history.state.tnm) { if (pushed) history.back(); else history.replaceState(null, '', base); }
-      pushed = false;
-    });
+    dlg.addEventListener('cancel', alCerrar);          // Escape
+    dlg.addEventListener('close', alCerrar);
     dlg.dataset.title = document.title;
     window.addEventListener('popstate', e => {
       const id = e.state && e.state.tnm;
       const card = id && root.querySelector(`.tnm-card[data-id="${CSS.escape(String(id))}"]`);
       if (card) open(card, { push: false });
-      else if (dlg.open) { pushed = false; dlg.close(); }
+      else if (dlg.open) { pushed = false; cerrar(); }
     });
-    root._tnmCloseModal = () => { if (dlg.open) dlg.close(); };
+    root._tnmCloseModal = cerrar;
   }
 
   /* ---------- ficha: pestañas, carrusel, 3D, descargas, compartir ---------- */

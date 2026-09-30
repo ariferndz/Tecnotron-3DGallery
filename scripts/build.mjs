@@ -5,6 +5,7 @@
 //
 // 1. Copia las librerías de terceros desde node_modules a tecnotron-maquinas/assets/vendor/
 //    y comprueba que sus versiones coinciden con las del plugin (TNM_MV_VERSION, TNM_QR_VERSION y readme.txt).
+//    Empaqueta el conversor de OBJ a GLB (src/obj-a-glb.js + three.js) en assets/vendor/obj-a-glb.js.
 // 2. Comprueba que la versión del plugin es la misma en la cabecera, en TNM_VERSION y en readme.txt.
 // 3. Revisa la sintaxis de todos los PHP (si hay PHP instalado).
 // 4. Empaqueta la carpeta en un zip reproducible: mismo contenido → mismo zip, byte a byte.
@@ -14,6 +15,7 @@ import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { zipSync } from 'fflate';
+import { build } from 'esbuild';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SLUG = 'tecnotron-maquinas';
@@ -23,7 +25,17 @@ const require = createRequire(import.meta.url);
 
 const errores = [];
 const leer = f => fs.readFileSync(path.join(PLUGIN, f), 'utf8');
-const pkgVersion = name => JSON.parse(fs.readFileSync(require.resolve(`${name}/package.json`), 'utf8')).version;
+// Carpeta de un paquete de node_modules (algunos, como three, no dejan pedir su package.json directamente)
+const pkgDir = name => {
+  let dir = path.dirname(require.resolve(name));
+  while (!fs.existsSync(path.join(dir, 'package.json')) || JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8')).name !== name) {
+    const arriba = path.dirname(dir);
+    if (arriba === dir) throw new Error(`No encuentro el paquete ${name}: ¿has ejecutado «npm ci»?`);
+    dir = arriba;
+  }
+  return dir;
+};
+const pkgVersion = name => JSON.parse(fs.readFileSync(path.join(pkgDir(name), 'package.json'), 'utf8')).version;
 const buscar = (texto, re, que) => {
   const m = texto.match(re);
   if (!m) errores.push(`No encuentro ${que}`);
@@ -41,6 +53,12 @@ const vendor = [
     archivos: { 'dist/model-viewer.min.js': 'model-viewer.min.js', LICENSE: 'LICENSE-model-viewer.txt' },
   },
   {
+    nombre: 'three.js',
+    paquete: 'three',
+    constante: 'TNM_THREE_VERSION',
+    archivos: { LICENSE: 'LICENSE-three.txt' },
+  },
+  {
     nombre: 'qrcode-generator',
     paquete: 'qrcode-generator',
     constante: 'TNM_QR_VERSION',
@@ -53,12 +71,27 @@ for (const v of vendor) {
   const enReadme = buscar(readme, new RegExp(`\\* ${v.nombre} ([0-9.]+)`), `la versión de ${v.nombre} en readme.txt`);
   if (enPlugin && enPlugin !== instalada) errores.push(`${v.paquete} instalado es ${instalada} pero ${v.constante} dice ${enPlugin}: cambia la constante en ${SLUG}.php`);
   if (enReadme && enReadme !== instalada) errores.push(`${v.paquete} instalado es ${instalada} pero readme.txt dice ${enReadme}: actualiza la sección «Terceros»`);
-  const base = path.dirname(require.resolve(`${v.paquete}/package.json`));
+  const base = pkgDir(v.paquete);
   for (const [origen, destino] of Object.entries(v.archivos)) {
     fs.copyFileSync(path.join(base, origen), path.join(PLUGIN, 'assets/vendor', destino));
   }
   console.log(`✓ ${v.nombre} ${instalada} → assets/vendor/`);
 }
+
+// Conversor OBJ → GLB del escritorio: sólo lo que usa de three.js, en un archivo minificado
+const conversor = await build({
+  entryPoints: [path.join(ROOT, 'src/obj-a-glb.js')],
+  bundle: true,
+  format: 'esm',
+  minify: true,
+  target: ['es2020'],
+  legalComments: 'none',
+  banner: { js: `/* Conversor OBJ → GLB de Tecnotron Máquinas (src/obj-a-glb.js). Incluye three.js ${pkgVersion('three')}, MIT: ver LICENSE-three.txt */` },
+  write: false,
+  logLevel: 'error',
+});
+fs.writeFileSync(path.join(PLUGIN, 'assets/vendor/obj-a-glb.js'), conversor.outputFiles[0].text);
+console.log(`✓ conversor OBJ → GLB → assets/vendor/obj-a-glb.js (${Math.round(conversor.outputFiles[0].text.length / 1024)} KB)`);
 
 /* 2. Versión del plugin */
 const cabecera = buscar(principal, /^\s*\*\s*Version:\s*(\S+)/m, 'la línea «Version:» de la cabecera');

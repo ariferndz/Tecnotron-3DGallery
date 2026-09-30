@@ -1,0 +1,40 @@
+/*
+ * Estilos típicos de un tema de WordPress que se aplican a TODOS los botones, campos y listas de la página
+ * (resumen de Hello Elementor, el «Kit» de Elementor, Astra y similares).
+ * Las pruebas los inyectan para comprobar que el catálogo se ve igual con cualquier tema.
+ * La clase del <body> «elementor-kit-7» la añade la prueba, como hace Elementor.
+ */
+li, dd, dl, dt, ol, ul { margin-top: 0; margin-bottom: 0; }
+p { margin-bottom: .9rem; }
+ul li, ol li { margin-bottom: 10px; line-height: 1.8; }
+ul li:last-child { margin-bottom: 0; }
+label { display: block; margin-bottom: 6px; font-weight: 600; }
+a { color: #c36; text-decoration: underline; }
+img { border-radius: 6px; box-shadow: 0 2px 6px rgba(0, 0, 0, .35); }
+
+button, [type=button], [type=submit] {
+  display: inline-block; font-weight: 400; color: #c36; text-align: center; background-color: transparent;
+  border: 1px solid #c36; padding: .5rem 1rem; font-size: 1rem; line-height: 1.5; border-radius: 3px;
+  text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 2px 0 rgba(0, 0, 0, .3); margin-bottom: 8px; min-height: 44px;
+}
+button:hover, button:focus, [type=button]:hover, [type=button]:focus, [type=submit]:hover {
+  color: #fff; background-color: #c36; text-decoration: none; border-color: #c36;
+}
+
+input[type=date], input[type=email], input[type=number], input[type=password], input[type=search], input[type=tel],
+input[type=text], input[type=url], select, textarea {
+  width: 100%; border: 1px solid #666; border-radius: 3px; padding: .5rem 1rem; transition: all .3s; height: auto;
+}
+
+.elementor-kit-7 input:not([type=button]):not([type=submit]), .elementor-kit-7 textarea, .elementor-kit-7 select {
+  color: #eee; background-color: #1c1c22; border: 1px solid #8b8b99; border-radius: 4px; padding: 6px 8px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .4); font-size: 15px; line-height: 1.4; margin: 0 0 12px;
+}
+.elementor-kit-7 input:focus:not([type=button]):not([type=submit]), .elementor-kit-7 textarea:focus, .elementor-kit-7 select:focus {
+  border-color: #b18cff; outline: 2px solid #b18cff; background-color: #26262e;
+}
+.elementor-kit-7 input::placeholder, .elementor-kit-7 textarea::placeholder { color: #d0d0d0; font-style: italic; }
+.elementor-kit-7 button, .elementor-kit-7 input[type=button], .elementor-kit-7 input[type=submit] {
+  background-color: #6d28d9; color: #fff; border-radius: 0; font-family: Georgia, serif;
+}
+.elementor-kit-7 button:hover, .elementor-kit-7 button:focus { background-color: #f0f; color: #000; }

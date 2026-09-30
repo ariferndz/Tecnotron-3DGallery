@@ -95,14 +95,42 @@ function tnm_register_types() {
 	add_rewrite_endpoint( 'visor', EP_PERMALINK );
 }
 
-// La descripción se escribe con el editor clásico: texto, negritas y listas, sin bloques.
+// La máquina se edita con el editor clásico: descripción arriba y debajo las cajas de ficha, imágenes, 3D y PDF.
+// Prioridad alta para ganar a plugins y temas que activan el editor de bloques en todo (p. ej. Classic Editor en modo «bloques»).
 add_filter(
 	'use_block_editor_for_post_type',
 	function ( $use, $type ) {
 		return TNM_CPT === $type ? false : $use;
 	},
-	10,
+	999,
 	2
+);
+add_filter(
+	'use_block_editor_for_post',
+	function ( $use, $post ) {
+		return $post && TNM_CPT === get_post_type( $post ) ? false : $use;
+	},
+	999,
+	2
+);
+
+// «Imagen principal» aparece aunque el tema no declare imágenes destacadas.
+add_action(
+	'after_setup_theme',
+	function () {
+		add_theme_support( 'post-thumbnails', array( TNM_CPT ) );
+	},
+	99
+);
+
+// Si Elementor está activado para este tipo, su editor oculta las cajas de la máquina y la plantilla del plugin
+// no usa su diseño: se quita «Editar con Elementor» de las máquinas.
+add_action(
+	'init',
+	function () {
+		remove_post_type_support( TNM_CPT, 'elementor' );
+	},
+	999
 );
 
 // Catálogo: destacadas primero, luego el campo «Orden» y el nombre; todas en una página (el filtro es instantáneo).

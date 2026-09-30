@@ -1,0 +1,6 @@
+newmtl Frente
+Kd 1 1 1
+map_Kd frente.png
+
+newmtl Carcasa
+Kd 0.55 0.36 0.96

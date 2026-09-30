@@ -1,6 +1,6 @@
 {
   "name": "tecnotron-3dgallery",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Catálogo de máquinas Tecnotron para WordPress: plugin, modelos 3D y herramientas para regenerarlo.",
   "type": "module",
@@ -29,5 +29,9 @@
     "playwright": "1.56.1",
     "qrcode-generator": "1.5.2",
     "sharp": "^0.35.5"
+  },
+  "dependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.183.2"
   }
 }

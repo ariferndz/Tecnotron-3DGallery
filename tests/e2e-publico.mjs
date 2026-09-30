@@ -3,7 +3,10 @@
 //   BASE=http://localhost:8080 node tests/e2e-publico.mjs
 //
 // Necesita el catálogo de demostración cargado (npm run dev:datos).
-import { BASE, CAPTURAS, abrirNavegador, comprobar, terminar, vigilar } from './comun.mjs';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { BASE, CAPTURAS, abrirNavegador, comprobar, diferencias, estilosCalculados, terminar, vigilar } from './comun.mjs';
 
 const navegador = await abrirNavegador();
 const shot = (p, nombre, opciones = {}) => p.screenshot({ path: `${CAPTURAS}/publico-${nombre}.png`, ...opciones });
@@ -104,6 +107,35 @@ try {
   const api = await (await d.request.get(BASE + '/wp-json/tecnotron/v1/maquinas')).json();
   comprobar(Array.isArray(api) && api.length === 42, 'la API pública devuelve las 42 máquinas');
   await d.close();
+
+  /* ---------- con los estilos de un tema agresivo (tests/tema-agresivo.css) el catálogo no cambia ---------- */
+  const temaCss = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'tema-agresivo.css'), 'utf8');
+  const t = vigilar(await navegador.newPage({ viewport: { width: 1280, height: 900 } }), 'tema');
+  await t.goto(BASE + '/maquinas/');
+  await t.waitForSelector('.tnm-card');
+  await t.addStyleTag({ content: '*{transition:none!important;animation:none!important}' });
+  for (const [estado, preparar] of [['catálogo', async () => {}], ['ficha abierta', async () => {
+    await t.locator('.tnm-card[data-url$="/peppa-bus/"] [data-tnm-open].tnm-pill').click();
+    await t.waitForSelector('[data-tnm-modal] [data-tnm-ficha]');
+    await t.waitForTimeout(600);
+  }]]) {
+    await preparar();
+    await t.mouse.move(0, 0);
+    const sinTema = await estilosCalculados(t);
+    const estilo = await t.addStyleTag({ content: temaCss });
+    await t.evaluate(() => document.body.classList.add('elementor-kit-7'));
+    const conTema = await estilosCalculados(t);
+    if (estado === 'catálogo') {
+      const alturas = await t.$$eval('.tnm-stats li', lis => lis.map(li => Math.round(li.getBoundingClientRect().height)));
+      comprobar(alturas.length > 1 && alturas.every(h => h === alturas[0]), 'las píldoras de datos tienen la misma altura', alturas.join(', '));
+    }
+    const dif = diferencias(sinTema, conTema);
+    comprobar(dif.length === 0, `con el CSS de un tema agresivo no cambia nada (${estado})`, dif.length ? `${dif.length} diferencias:\n    ` + dif.slice(0, 8).join('\n    ') : `${sinTema.length} elementos`);
+    await t.screenshot({ path: `${CAPTURAS}/publico-tema-${estado.replace(/\s+/g, '-')}.png` });
+    await estilo.evaluate(e => e.remove());
+    await t.evaluate(() => document.body.classList.remove('elementor-kit-7'));
+  }
+  await t.close();
 
   /* ---------- móvil ---------- */
   const ctx = await navegador.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });

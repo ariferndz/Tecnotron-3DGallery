@@ -55,13 +55,17 @@ El plugin se instala en unos cinco minutos desde el panel de WordPress; no hace 
 5. Abrir **tecnotron.es/maquinas/**. Si diera error 404, ir a **Ajustes → Enlaces permanentes** y pulsar **Guardar** sin cambiar nada.
 6. **Menú del sitio**: enlazar «Productos» a /maquinas/, o poner el shortcode `[tecnotron_catalogo]` en la página de productos actual. Con `[tecnotron_catalogo categoria="kiddie-rides"]` se muestra una sola categoría.
 
-**Requisitos:** WordPress 6.2 o superior y PHP 7.4 o superior. Funciona con temas clásicos (incluidos los de Elementor) y con temas de bloques: el catálogo y las fichas usan la cabecera y el pie del tema. Si hay un plugin de SEO (Yoast, Rank Math, All in One SEO), este se encarga de la descripción y Open Graph de cada ficha.
+**Requisitos:** WordPress 6.2 o superior y PHP 7.4 o superior. Funciona con temas clásicos (incluidos los de Elementor) y con temas de bloques: el catálogo y las fichas usan la cabecera y el pie del tema. Los botones, el buscador, los campos y las listas del catálogo no heredan los estilos del tema, así que se ven igual en cualquier web. Si hay un plugin de SEO (Yoast, Rank Math, All in One SEO), este se encarga de la descripción y Open Graph de cada ficha.
 
-**Probado** en WordPress 6.4 con PHP 8.4 (tema clásico y Twenty Twenty-Four) y en WordPress 6.8 con PHP 8.3 en modo depuración (Twenty Twenty-Five), en escritorio y móvil: catálogo, filtros, ficha, carrusel, 3D, QR, ficha impresa, formulario, importación y exportación. Las mismas pruebas se pueden repetir con `npm test` (ver README).
+**Probado** en WordPress 6.4 con PHP 8.4 (tema clásico y Twenty Twenty-Four) y en WordPress 6.8 con PHP 8.3 en modo depuración (Twenty Twenty-Five), en escritorio y móvil: catálogo, filtros, ficha, carrusel, 3D, QR, ficha impresa, formulario, importación y exportación, conversión de OBJ, y el catálogo con los estilos de un tema agresivo (tipo Hello Elementor). Las mismas pruebas se pueden repetir con `npm test` (ver README).
 
 ## Gestionar máquinas
 
-Cada máquina es una entrada del menú **Máquinas**; todo lo que se ve en su ficha se edita en una sola pantalla.
+Cada máquina es una entrada del menú **Máquinas**; todo lo que se ve en su ficha se edita en una sola pantalla: **Máquinas → Todas las máquinas → clic en el nombre** (o en el enlace **Imágenes, ficha y 3D** que aparece al pasar el ratón). La «Edición rápida» del listado sólo cambia nombre, categoría y estado: no tiene imágenes, datos ni 3D.
+
+Arriba de esa pantalla, el panel **Contenido de la ficha** muestra lo que tiene la máquina (✓ en verde) y lo que le falta (+ en rojo). Cada apartado lleva a su caja y la abre:
+
+![Panel «Contenido de la ficha» en la pantalla de una máquina](img/admin-panel.webp)
 
 **Añadir una máquina:** Máquinas → Añadir máquina, y rellenar de arriba abajo:
 
@@ -82,7 +86,11 @@ Cada máquina es una entrada del menú **Máquinas**; todo lo que se ve en su fi
 
 Los campos vacíos no aparecen en la web. La superficie ocupada se calcula sola con ancho × largo. «Atención al cliente» y «Servicio técnico» no se escriben aquí: son comunes y se cambian en Ajustes.
 
-**Editar:** Máquinas → Todas las máquinas, clic en el nombre, cambiar y **Actualizar**. El listado muestra foto, medidas, si tiene 3D y el orden.
+**Editar:** Máquinas → Todas las máquinas, clic en el nombre, cambiar y **Actualizar**. En el listado, la columna **Contenido de la ficha** dice de un vistazo qué tiene cada máquina (en verde) y qué le falta (en gris): foto, galería, datos, 3D y PDF. Cada etiqueta lleva directamente a su caja.
+
+![Listado de máquinas con la columna «Contenido de la ficha»](img/admin-listado.webp)
+
+**Si no aparecen las cajas de imágenes, ficha técnica o 3D.** El plugin las muestra siempre: usa el editor clásico para las máquinas aunque otro plugin active el de bloques, quita «Editar con Elementor» de las máquinas (su editor las esconde) y añade «Imagen principal» aunque el tema no la tenga. Si aun así no se ven, comprueba que estás en la pantalla de edición (no en «Edición rápida»), que el plugin está en la versión 1.1.0 o superior (Plugins) y que ningún plugin de administración (Adminimize, Admin Menu Editor…) oculta cajas.
 
 **Ordenar el catálogo:** primero salen las marcadas como **Destacada** (casilla al final de la ficha técnica); después, por el campo **Orden**, de menor a mayor. El visitante también puede ordenar por nombre o tamaño.
 
@@ -116,7 +124,7 @@ En el catálogo solo aparecen los filtros de categorías con alguna máquina pub
 
 Cada máquina admite un archivo .glb: se sube a la biblioteca de medios desde su ficha y el plugin lo muestra en la pestaña «3D · AR» y en el visor del QR.
 
-**1. Preparar el archivo.** Formato GLB (no OBJ), en metros y con las medidas reales de la máquina. Los tres modelos de ejemplo pesaban 4–4,5 MB; optimizados quedan en 1,1–1,3 MB sin pérdida visible (están en [modelos/](../modelos/)). Para optimizar otros, desde la carpeta del repositorio:
+**1. Preparar el archivo.** La web usa GLB, en metros y con las medidas reales de la máquina. Si la máquina está en **OBJ**, se puede subir tal cual: el plugin lo convierte (paso 3). Para otros formatos (FBX, STL, SKP…), ábrelo en Blender y expórtalo como glTF 2.0 binario (.glb). Los tres modelos de ejemplo pesaban 4–4,5 MB; optimizados quedan en 1,1–1,3 MB sin pérdida visible (están en [modelos/](../modelos/)). Para optimizar otros, desde la carpeta del repositorio:
 
 ```bash
 npm run optimizar -- maquina.glb --medida 198     # 198 = la mayor de ancho y largo, en cm
@@ -142,6 +150,12 @@ Los tres ya están ajustados al ancho de su ficha (`npm run optimizar -- … --m
 **3. Subir y enlazar.** En la ficha de la máquina, caja **Modelo 3D y realidad aumentada** → **Elegir o subir GLB** → arrastrar el archivo → **Usar este modelo** → **Actualizar**. Aparece la vista previa girando y la comprobación de tamaño. También se puede pegar una dirección https si el GLB está en otro servidor.
 
 ![Caja «Modelo 3D y realidad aumentada» con la vista previa y la comprobación de tamaño](img/admin-modelo.webp)
+
+**3 bis. Subir un OBJ.** En la misma caja, **Convertir un OBJ…** → elige **a la vez** el archivo .obj, su .mtl y sus texturas (.jpg, .png) → el navegador lo convierte a GLB, lo escala a la mayor de ancho y largo de la ficha (rellénalas antes), lo apoya en el suelo y lo sube a Medios → **Actualizar**. Si falta alguna textura, lo avisa con su nombre. Si el modelo sale tumbado, marca «El modelo sale tumbado» y vuelve a convertirlo. Sin medidas en la ficha, deduce si el OBJ está en milímetros, centímetros o metros.
+
+![Caja «Modelo 3D» tras convertir un OBJ: vista previa y comprobación de tamaño](img/admin-obj.webp)
+
+El GLB convertido guarda las texturas tal cual (JPEG o PNG) y no comprime la geometría. Para modelos pesados, `npm run optimizar` (ver README) lo deja más ligero.
 
 **4. Cambiar o quitar.** Elegir otro archivo o pulsar **Quitar modelo**. Los GLB subidos se ven en Medios con el filtro «Modelos 3D».
 
@@ -206,7 +220,7 @@ El visitante junta las máquinas que le interesan con el botón + y envía una s
 | Título y texto del bloque de contacto | «Contáctanos» y un texto breve | Encima del formulario |
 | Usar otro formulario | Vacío | Shortcode de vuestro formulario actual |
 
-**Colores y tipografía.** El catálogo usa la tipografía del tema y un diseño oscuro como el de la web actual. Los colores se cambian sin tocar el plugin, con variables en **Apariencia → Personalizar → CSS adicional**; por ejemplo, `.tnm{--tnm-accent:#8b5cf6}` cambia el morado de los botones.
+**Colores y tipografía.** El catálogo usa la tipografía del tema y un diseño oscuro como el de la web actual. Los colores se cambian sin tocar el plugin, con variables en **Apariencia → Personalizar → CSS adicional**; por ejemplo, `.tnm{--tnm-accent:#8b5cf6}` cambia el morado de los botones. Los estilos del tema para botones, campos, listas e imágenes no afectan al catálogo; para cambiar uno de esos elementos desde el CSS adicional, añade `:not(#tnm)` al selector (p. ej. `.tnm-chip:not(#tnm){font-size:14px}`).
 
 ## Importar y exportar en CSV
 
@@ -245,7 +259,9 @@ El plugin no depende de otros plugins (ni ACF ni constructores) y no carga nada 
 | includes/admin/\*.php | Cajas de la ficha, campos de categoría, ajustes, columnas e importador |
 | templates/catalogo.php, maquina.php, visor.php | Plantillas; se sustituyen copiándolas a ‹tema›/tecnotron-maquinas/ |
 | assets/js/tecnotron-maquinas.js | Filtros, ventana de ficha, carrusel, 3D/AR, QR, ficha impresa y formulario, sin jQuery |
-| assets/vendor/ | model-viewer 4.3.1 (Apache-2.0) y qrcode-generator 1.5.2 (MIT); se actualizan con npm y `npm run build` |
+| assets/css/tecnotron-maquinas.css | Estilos; las reglas de botones, campos, listas e imágenes llevan `:not(#tnm)` para ganar siempre a las del tema |
+| assets/js/admin.js | Pantalla de la máquina: panel de contenido, galería, GLB con vista previa, conversión de OBJ y PDF |
+| assets/vendor/ | model-viewer 4.3.1 (Apache-2.0), qrcode-generator 1.5.2 (MIT) y obj-a-glb.js (conversor OBJ → GLB con three.js 0.183, MIT, generado desde src/obj-a-glb.js); se actualizan con npm y `npm run build` |
 | data/maquinas-configurador.csv | Catálogo inicial |
 
 **Datos de cada máquina** (metadatos de la entrada): \_tnm\_codigo, \_tnm\_consumo, \_tnm\_alimentacion, \_tnm\_conformidad, \_tnm\_peso, \_tnm\_ancho, \_tnm\_largo, \_tnm\_alto (cm), \_tnm\_superficie (m², opcional), \_tnm\_destacada, \_tnm\_galeria (IDs de adjunto), \_tnm\_glb\_id o \_tnm\_glb\_url y \_tnm\_fichas. La descripción es el contenido de la entrada; el orden, menu\_order. Las categorías guardan tnm\_singular, tnm\_color, tnm\_icono y tnm\_orden.
@@ -265,7 +281,7 @@ El plugin no depende de otros plugins (ni ACF ni constructores) y no carga nada 
 - [ ] Revisar las categorías asignadas a cada máquina.
 - [ ] Subir la imagen principal y la galería de cada máquina desde las fotos actuales de la web.
 - [ ] Completar las fichas (consumo, alimentación, conformidad, peso, descripción), a mano o con el CSV.
-- [ ] Subir los GLB de [modelos/](../modelos/) a Block Car, Peppa Bus y Bluey, y el resto a medida que estén.
+- [ ] Subir los GLB de [modelos/](../modelos/) a Block Car, Peppa Bus y Bluey, y el resto (GLB u OBJ) a medida que estén.
 - [ ] Configurar el correo de solicitudes y, si hace falta, un plugin SMTP; enviar una solicitud de prueba.
 - [ ] Probar «Ver en tu local» en un Android y en un iPhone desde la web publicada.
 - [ ] Enlazar «Productos» del menú a /maquinas/ y redirigir las fichas antiguas a las nuevas (plugin Redirection) para no perder posicionamiento.

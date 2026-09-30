@@ -19,7 +19,8 @@ tecnotron-maquinas/     Código fuente del plugin (es exactamente lo que va dent
 dist/                   tecnotron-maquinas.zip, generado con «npm run build»
 modelos/                GLB optimizados a tamaño real y sus 4 imágenes (Block Car, Peppa Bus, Bluey Family Car)
 scripts/                build.mjs (zip del plugin), optimizar-glb.mjs, imagenes-glb.mjs, prototipo.mjs
-tests/                  Pruebas en navegador (web pública y escritorio) y cargador de datos de demostración
+src/                    obj-a-glb.js: conversor OBJ → GLB del escritorio (build lo empaqueta con three.js)
+tests/                  Pruebas en navegador (web pública y escritorio), CSS de un «tema agresivo», OBJ de prueba y datos de demostración
 dev/mu-plugins/         Ajustes sólo para el entorno de desarrollo
 prototipo/              Maqueta HTML aprobada antes de hacer el plugin
 docs/                   Guía de uso e imágenes
@@ -54,8 +55,8 @@ npm run build     # → dist/tecnotron-maquinas.zip
 
 `npm run build` ([scripts/build.mjs](scripts/build.mjs)):
 
-1. Copia las librerías de terceros desde `node_modules` a `tecnotron-maquinas/assets/vendor/`: **model-viewer** (visor 3D y realidad aumentada) y **qrcode-generator** (QR).
-2. Comprueba que sus versiones coinciden con las constantes `TNM_MV_VERSION` y `TNM_QR_VERSION` del plugin y con `readme.txt`.
+1. Copia las librerías de terceros desde `node_modules` a `tecnotron-maquinas/assets/vendor/`: **model-viewer** (visor 3D y realidad aumentada) y **qrcode-generator** (QR), y empaqueta con esbuild el **conversor de OBJ** ([src/obj-a-glb.js](src/obj-a-glb.js)) con la parte de **three.js** que usa, en `assets/vendor/obj-a-glb.js`.
+2. Comprueba que sus versiones coinciden con las constantes `TNM_MV_VERSION`, `TNM_QR_VERSION` y `TNM_THREE_VERSION` del plugin y con `readme.txt`.
 3. Comprueba que la versión del plugin es la misma en la cabecera de `tecnotron-maquinas.php`, en `TNM_VERSION` y en el `Stable tag` de `readme.txt`.
 4. Revisa la sintaxis de los PHP.
 5. Empaqueta la carpeta en `dist/tecnotron-maquinas.zip`. El zip es reproducible: con el mismo código sale idéntico byte a byte en Windows, macOS o Linux, así que la integración continua puede comprobar que el zip subido está al día.
@@ -77,11 +78,11 @@ Si algo no cuadra, el script no genera el zip y explica qué corregir.
 npm install --save-exact @google/model-viewer@4.4.0    # la versión nueva
 ```
 
-Cambia `TNM_MV_VERSION` en `tecnotron-maquinas.php` y la línea de «Terceros» en `readme.txt`, ejecuta `npm run build` y prueba la realidad aumentada en un Android y un iPhone antes de publicar. Para el QR es igual con `qrcode-generator` y `TNM_QR_VERSION`.
+Cambia `TNM_MV_VERSION` en `tecnotron-maquinas.php` y la línea de «Terceros» en `readme.txt`, ejecuta `npm run build` y prueba la realidad aumentada en un Android y un iPhone antes de publicar. Para el QR es igual con `qrcode-generator` y `TNM_QR_VERSION`. three.js (`TNM_THREE_VERSION`) debe ser la misma versión que pide model-viewer (`npm ls three` avisa si no).
 
 ## Modelos 3D
 
-La web usa **GLB** (glTF binario), no OBJ. Si una máquina está en OBJ, FBX u otro formato, ábrela en Blender y expórtala con **Archivo → Exportar → glTF 2.0**, formato *glTF Binary (.glb)*.
+La web usa **GLB** (glTF binario). Los **OBJ** se pueden subir directamente en WordPress: en la caja **Modelo 3D** de la máquina, **Convertir un OBJ…** y elegir a la vez el .obj, su .mtl y sus texturas; el navegador lo convierte a GLB, lo escala a las medidas de la ficha y lo sube (ver [la guía](docs/guia.md#modelos-3d-glb)). Para FBX, STL u otros formatos, ábrelos en Blender y expórtalos con **Archivo → Exportar → glTF 2.0**, formato *glTF Binary (.glb)*.
 
 Para dejar un GLB listo para la web:
 
@@ -130,7 +131,9 @@ npm test                           # o npm run test:publico / npm run test:admin
 
 | Web pública ([tests/e2e-publico.mjs](tests/e2e-publico.mjs)) | Escritorio ([tests/e2e-admin.mjs](tests/e2e-admin.mjs)) |
 | --- | --- |
-| 42 tarjetas, buscador, filtros de categoría y «con 3D» | Listado de máquinas |
+| 42 tarjetas, buscador, filtros de categoría y «con 3D» | Listado con la columna «Contenido de la ficha» y el enlace «Imágenes, ficha y 3D» |
+| Con el CSS de un tema agresivo ([tests/tema-agresivo.css](tests/tema-agresivo.css)) el catálogo y la ficha no cambian ni un píxel; píldoras de datos de igual altura | Panel «Contenido de la ficha» y cajas siempre visibles |
+| | Convertir un OBJ con su MTL y textura ([tests/fixtures/](tests/fixtures/)), guardarlo y quitarlo |
 | Ficha en ventana: cambia la dirección, carrusel, siguiente/anterior | Vista previa del GLB y aviso de tamaño |
 | Modelo 3D a escala real y QR del visor | Guardar consumo, peso y PDF; la API lo refleja |
 | Solicitud: bandeja, validación de los 5 campos y envío | 5 categorías, ajustes |
@@ -166,11 +169,14 @@ npm run prototipo    # → prototipo/catalogo-maquinas.html (≈ 6,5 MB, incluye
 - API pública de sólo lectura: `/wp-json/tecnotron/v1/maquinas`.
 - Plantillas sustituibles desde el tema (`<tema>/tecnotron-maquinas/catalogo.php`, `maquina.php`, `visor.php`) y colores con variables CSS `--tnm-*`.
 - Filtro `tnm_solicitudes_por_hora` para cambiar el límite antispam del formulario (5 por hora e IP).
+- A prueba de temas: las reglas CSS de botones, campos, listas e imágenes llevan `:not(#tnm)`, que les da la fuerza de un id sin cambiar a qué se aplican. Así el tema no las pisa. Si añades una regla para uno de esos elementos, pónselo también; `npm test` lo comprueba con [tests/tema-agresivo.css](tests/tema-agresivo.css).
+- Pantalla de la máquina a prueba de plugins: editor clásico aunque otro plugin active el de bloques, sin «Editar con Elementor», «Imagen principal» aunque el tema no la declare y cajas que no se pueden ocultar.
+- Conversor OBJ → GLB en el navegador ([src/obj-a-glb.js](src/obj-a-glb.js)): carga el OBJ con su MTL y texturas con three.js, pasa los materiales a PBR, escala, apoya en el suelo y exporta GLB; sube el resultado con la API REST de Medios.
 
 El detalle de cada archivo, los datos que guarda cada máquina y la API están en [Estructura técnica](docs/guia.md#estructura-técnica).
 
 ## Licencias
 
 - Plugin y herramientas: [GPL-2.0-or-later](LICENSE), como WordPress.
-- [model-viewer](https://github.com/google/model-viewer) (Google, Apache-2.0) y [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) (Kazuhiko Arase, MIT): sus licencias van en `tecnotron-maquinas/assets/vendor/`.
+- [model-viewer](https://github.com/google/model-viewer) (Google, Apache-2.0), [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) (Kazuhiko Arase, MIT) y [three.js](https://threejs.org) (MIT, dentro del conversor de OBJ): sus licencias van en `tecnotron-maquinas/assets/vendor/`.
 - Los modelos 3D, las imágenes y los datos de las máquinas son material de Tecnotron. Los personajes (Peppa Pig, Bluey…) son marcas de sus titulares.

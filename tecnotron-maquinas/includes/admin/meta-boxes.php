@@ -16,10 +16,40 @@ add_filter(
 	2
 );
 
+/**
+ * Qué tiene y qué le falta a la ficha de una máquina (panel de la pantalla de edición y columna del listado).
+ *
+ * @param WP_Post|int $post Máquina.
+ * @return array[] Cada elemento: caja (id del ancla), texto, ok (bool).
+ */
+function tnm_estado_ficha( $post ) {
+	$post  = get_post( $post );
+	$id    = $post->ID;
+	$gal   = array_filter( array_map( 'absint', explode( ',', (string) get_post_meta( $id, '_tnm_galeria', true ) ) ) );
+	$datos = 0;
+	foreach ( array( 'codigo', 'consumo', 'alimentacion', 'conformidad', 'peso', 'ancho', 'largo', 'alto' ) as $k ) {
+		$datos += '' !== trim( (string) get_post_meta( $id, '_tnm_' . $k, true ) ) ? 1 : 0;
+	}
+	$pdfs = get_post_meta( $id, '_tnm_fichas', true );
+	$pdfs = is_array( $pdfs ) ? count( $pdfs ) : 0;
+	return array(
+		'foto'    => array( 'caja' => 'postimagediv', 'texto' => has_post_thumbnail( $id ) ? 'Imagen principal' : 'Falta la imagen principal', 'ok' => has_post_thumbnail( $id ) ),
+		'galeria' => array( 'caja' => 'tnm_galeria', 'texto' => 'Galería: ' . count( $gal ) . ( 1 === count( $gal ) ? ' imagen' : ' imágenes' ), 'ok' => count( $gal ) > 0 ),
+		'datos'   => array( 'caja' => 'tnm_ficha', 'texto' => "Ficha técnica: $datos de 8 datos", 'ok' => 8 === $datos ),
+		'modelo'  => array( 'caja' => 'tnm_modelo', 'texto' => tnm_glb_url( $id ) ? 'Modelo 3D' : 'Sin modelo 3D', 'ok' => (bool) tnm_glb_url( $id ) ),
+		'pdf'     => array( 'caja' => 'tnm_fichas', 'texto' => 'PDF: ' . $pdfs, 'ok' => $pdfs > 0 ),
+	);
+}
+
 add_action(
 	'edit_form_after_title',
 	function ( $post ) {
 		if ( TNM_CPT === $post->post_type ) {
+			echo '<nav class="tnm-completar" id="tnm-contenido" aria-label="Contenido de la ficha"><b>Contenido de la ficha</b>';
+			foreach ( tnm_estado_ficha( $post ) as $e ) {
+				printf( '<a href="#%s" class="tnm-c %s" data-tnm-ir><span aria-hidden="true">%s</span>%s</a>', esc_attr( $e['caja'] ), $e['ok'] ? 'tnm-c-ok' : 'tnm-c-falta', $e['ok'] ? '✓' : '+', esc_html( $e['texto'] ) );
+			}
+			echo '<span class="tnm-c-help">Pulsa cada apartado para ir a su caja. Todo se guarda con «Publicar» / «Actualizar».</span></nav>';
 			echo '<h2 class="tnm-editor-title">Descripción</h2><p class="tnm-editor-help">Texto de presentación. Usa la lista con viñetas del editor para enumerar ventajas («dos juegos en uno…»).</p>';
 		}
 	}
@@ -29,14 +59,24 @@ add_action(
 	'admin_enqueue_scripts',
 	function ( $hook ) {
 		$screen = get_current_screen();
-		if ( ! $screen || ! in_array( $screen->id, array( TNM_CPT, 'edit-' . TNM_TAX, TNM_CPT . '_page_tnm-ajustes', TNM_CPT . '_page_tnm-importar' ), true ) ) {
+		if ( ! $screen || ! in_array( $screen->id, array( TNM_CPT, 'edit-' . TNM_CPT, 'edit-' . TNM_TAX, TNM_CPT . '_page_tnm-ajustes', TNM_CPT . '_page_tnm-importar' ), true ) ) {
 			return;
 		}
 		wp_enqueue_style( 'tnm-admin', TNM_URL . 'assets/css/admin.css', array(), TNM_VERSION );
 		if ( TNM_CPT === $screen->id ) {
 			wp_enqueue_media();
 			wp_enqueue_script( 'tnm-admin', TNM_URL . 'assets/js/admin.js', array( 'jquery', 'jquery-ui-sortable' ), TNM_VERSION, true );
-			wp_localize_script( 'tnm-admin', 'TNM_ADMIN', array( 'mv' => TNM_URL . 'assets/vendor/model-viewer.min.js?ver=' . TNM_MV_VERSION ) );
+			wp_localize_script(
+				'tnm-admin',
+				'TNM_ADMIN',
+				array(
+					'mv'    => TNM_URL . 'assets/vendor/model-viewer.min.js?ver=' . TNM_MV_VERSION,
+					'obj'   => TNM_URL . 'assets/vendor/obj-a-glb.js?ver=' . TNM_VERSION,
+					'media' => esc_url_raw( add_query_arg( 'post', (int) get_the_ID(), rest_url( 'wp/v2/media' ) ) ),
+					'nonce' => wp_create_nonce( 'wp_rest' ),
+					'max'   => (int) wp_max_upload_size(),
+				)
+			);
 		}
 		if ( 'edit-' . TNM_TAX === $screen->id ) {
 			wp_enqueue_style( 'wp-color-picker' );
@@ -44,6 +84,19 @@ add_action(
 			wp_add_inline_script( 'wp-color-picker', 'jQuery(function($){$(".tnm-color").wpColorPicker();});' );
 		}
 	}
+);
+
+// Las cajas de la máquina no se pueden ocultar desde «Opciones de pantalla»: sin ellas no hay dónde poner imágenes, datos ni 3D.
+add_filter(
+	'hidden_meta_boxes',
+	function ( $hidden, $screen ) {
+		if ( $screen && TNM_CPT === $screen->post_type ) {
+			$hidden = array_values( array_diff( (array) $hidden, array( 'postimagediv', 'tnm_ficha', 'tnm_galeria', 'tnm_modelo', 'tnm_fichas' ) ) );
+		}
+		return $hidden;
+	},
+	10,
+	2
 );
 
 add_action(
@@ -113,13 +166,20 @@ function tnm_box_modelo( $post ) {
 	$src = tnm_glb_url( $post->ID );
 	$m   = tnm_maquina( $post );
 	?>
-	<p class="tnm-help">Sube el archivo <b>.glb</b> de la máquina (optimizado para web, idealmente menos de 5 MB). Se muestra en la pestaña «3D · AR» de la ficha y en el visor del QR. Para que la realidad aumentada muestre la máquina <b>a tamaño real</b>, el GLB debe estar en metros con las medidas reales.</p>
+	<p class="tnm-help">Sube el archivo <b>.glb</b> de la máquina (optimizado para web, idealmente menos de 5 MB) o conviértelo desde un <b>.obj</b>. Se muestra en la pestaña «3D · AR» de la ficha y en el visor del QR. Para que la realidad aumentada muestre la máquina <b>a tamaño real</b>, el modelo debe tener las medidas de la ficha: al convertir un OBJ se ajusta solo.</p>
 	<input type="hidden" name="tnm[glb_id]" value="<?php echo $att ? (int) $att : ''; ?>" data-tnm-glb-id>
 	<p class="tnm-glb-row">
 		<button type="button" class="button button-primary" data-tnm-glb-pick>Elegir o subir GLB</button>
+		<button type="button" class="button" data-tnm-obj-pick>Convertir un OBJ…</button>
 		<button type="button" class="button" data-tnm-glb-clear<?php echo $src ? '' : ' hidden'; ?>>Quitar modelo</button>
 		<span class="tnm-glb-name" data-tnm-glb-name><?php echo $att ? esc_html( basename( (string) get_attached_file( $att ) ) ) : ''; ?></span>
 	</p>
+	<div class="tnm-obj">
+		<input type="file" multiple hidden accept=".obj,.mtl,.jpg,.jpeg,.png,.webp,.gif,.bmp" data-tnm-obj-files>
+		<p class="tnm-help"><b>Desde OBJ:</b> pulsa «Convertir un OBJ…» y elige <b>a la vez</b> el .obj, su .mtl y sus texturas. Se convierte a GLB en tu navegador, se escala a la mayor de ancho y largo de la ficha (rellénalas antes) y se sube a Medios.
+			<label class="tnm-check"><input type="checkbox" data-tnm-obj-z> El modelo sale tumbado (exportado con el eje Z hacia arriba)</label></p>
+		<p class="tnm-obj-status" data-tnm-obj-status aria-live="polite"></p>
+	</div>
 	<p><label>O dirección externa del GLB (https://…)<br><input type="url" class="widefat" name="tnm[glb_url]" value="<?php echo esc_attr( $url ); ?>" placeholder="https://" data-tnm-glb-url></label></p>
 	<div class="tnm-glb-preview" data-tnm-glb-preview data-src="<?php echo esc_attr( $src ); ?>" data-dims="<?php echo esc_attr( $m['tiene_medidas'] ? $m['ancho'] . ',' . $m['largo'] . ',' . $m['alto'] : '' ); ?>">
 		<div class="tnm-glb-stage" data-tnm-glb-stage><?php echo $src ? '' : '<span>Sin modelo 3D</span>'; ?></div>

@@ -1,6 +1,19 @@
-/* Tecnotron Máquinas — pantalla de edición: galería, modelo GLB con vista previa y fichas PDF. */
+/* Tecnotron Máquinas — pantalla de edición: panel de contenido, galería, modelo GLB (o OBJ convertido) con vista previa y fichas PDF. */
 jQuery(function ($) {
   'use strict';
+
+  /* ---------- panel «Contenido de la ficha»: lleva a cada caja y la abre si estaba plegada ---------- */
+  function irA(id) {
+    const box = document.getElementById(id); if (!box) return;
+    box.classList.remove('closed'); box.hidden = false; box.style.display = '';
+    $(box).find('.handlediv').attr('aria-expanded', 'true');
+    const y = box.getBoundingClientRect().top + window.scrollY - 50;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    box.classList.add('tnm-resaltar'); setTimeout(() => box.classList.remove('tnm-resaltar'), 1600);
+  }
+  $('[data-tnm-ir]').on('click', function (e) { e.preventDefault(); irA(this.hash.slice(1)); });
+  // Desde el listado se llega con #tnm_modelo, #tnm_galeria…
+  if (location.hash && /^#(tnm_|postimagediv)/.test(location.hash)) setTimeout(() => irA(location.hash.slice(1)), 300);
 
   /* ---------- galería (carrusel) ---------- */
   const $gal = $('[data-tnm-galeria]'), $galIn = $('[data-tnm-galeria-input]');
@@ -68,6 +81,41 @@ jQuery(function ($) {
   $url.on('change', () => { if ($url.val()) setGlb('', $url.val(), ''); });
   $('[data-tnm-dim]').on('change', () => { const src = $prev.find('model-viewer').attr('src'); if (src) preview(src); });
   if ($prev.data('src')) preview($prev.data('src'));
+
+  /* ---------- convertir un OBJ (con su .mtl y texturas) a GLB y subirlo a Medios ---------- */
+  const $objIn = $('[data-tnm-obj-files]'), $objSt = $('[data-tnm-obj-status]');
+  const mb = b => (b < 1048576 ? Math.max(1, Math.round(b / 1024)) + ' KB' : (b / 1048576).toLocaleString('es-ES', { maximumFractionDigits: 1 }) + ' MB');
+  const estado = (txt, cls) => $objSt.text(txt).attr('class', 'tnm-obj-status' + (cls ? ' ' + cls : ''));
+  $('[data-tnm-obj-pick]').on('click', () => $objIn.trigger('click'));
+  $objIn.on('change', async function () {
+    const files = [...this.files]; this.value = '';
+    if (!files.length) return;
+    const obj = files.find(f => /\.obj$/i.test(f.name));
+    if (!obj) { estado('Falta el archivo .obj: elige a la vez el .obj, su .mtl y sus texturas.', 'tnm-warn'); return; }
+    const $btns = $('[data-tnm-obj-pick],[data-tnm-glb-pick]').prop('disabled', true);
+    try {
+      estado(`Convirtiendo ${obj.name} a GLB…`);
+      const { objAGlb } = await import(TNM_ADMIN.obj);
+      const [ancho, largo] = dims();
+      const r = await objAGlb(files, { medidaCm: Math.max(ancho || 0, largo || 0), zArriba: $('[data-tnm-obj-z]').is(':checked') });
+      if (r.blob.size > TNM_ADMIN.max) throw new Error(`el GLB ocupa ${mb(r.blob.size)} y el servidor admite ${mb(TNM_ADMIN.max)} por archivo. Reduce las texturas o usa «npm run optimizar» (ver README).`);
+      const nombre = (obj.name.replace(/\.obj$/i, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'modelo') + '.glb';
+      estado(`Subiendo ${nombre} (${mb(r.blob.size)})…`);
+      const res = await fetch(TNM_ADMIN.media, {
+        method: 'POST', credentials: 'same-origin', body: r.blob,
+        headers: { 'X-WP-Nonce': TNM_ADMIN.nonce, 'Content-Type': 'model/gltf-binary', 'Content-Disposition': `attachment; filename="${nombre}"` },
+      });
+      const a = await res.json().catch(() => ({}));
+      if (!res.ok || !a.id) throw new Error(a.message ? a.message.replace(/<[^>]+>/g, '') : `el servidor respondió ${res.status}.`);
+      $url.val('');
+      setGlb(a.id, a.source_url, nombre);
+      estado([`Convertido y subido: ${nombre}, ${mb(r.blob.size)}, ${r.medidas.join(' × ')} cm. Pulsa «Actualizar» para guardarlo en la máquina.`, ...r.avisos].join(' '), r.avisos.length ? 'tnm-warn' : 'tnm-ok');
+    } catch (e) {
+      estado('No se pudo convertir: ' + e.message, 'tnm-warn');
+    } finally {
+      $btns.prop('disabled', false);
+    }
+  });
 
   /* ---------- fichas PDF ---------- */
   const $pdfs = $('[data-tnm-pdfs] tbody');
