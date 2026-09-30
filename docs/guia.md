@@ -170,11 +170,12 @@ La pestaña «Imágenes» de la ficha es un carrusel: empieza por la imagen prin
 - **Imagen principal** (caja lateral): la foto de la tarjeta del catálogo y la primera del carrusel. Mejor con fondo transparente o neutro, como las de la web actual.
 - **Galería de imágenes (carrusel)**: **Añadir imágenes** abre la biblioteca y permite elegir varias a la vez. Se reordenan arrastrando las miniaturas y se quitan con la ×.
 - **Tamaño recomendado:** unos 1.200 px de ancho. WordPress genera las versiones pequeñas y el navegador descarga la adecuada para cada pantalla.
+- **Cualquier proporción:** verticales, cuadradas o apaisadas, cada foto se encaja entera en su recuadro (4:3 en la tarjeta del catálogo); nunca se recorta ni estira la tarjeta ni obliga a desplazarse en la ficha.
 - **Texto alternativo:** el de cada imagen en Medios; si está vacío se usa el nombre de la máquina.
 
 ![Pestaña «Imágenes» con el carrusel](img/ficha-imagenes.webp)
 
-En el móvil el carrusel se pasa con el dedo; en el ordenador, con flechas, puntos o las teclas ← →. Si la máquina tiene modelo 3D, la ficha abre en la pestaña **3D · AR** y al lado está **Imágenes**; sin modelo 3D sólo aparece **Imágenes**. En Ajustes se puede hacer que abra en Imágenes. Sin fotos, se muestra el icono de su categoría.
+En el móvil el carrusel se pasa con el dedo; en el ordenador, con flechas, puntos o las teclas ← →. Si la máquina tiene modelo 3D, la ficha abre en la pestaña **3D · AR** y al lado está **Imágenes**; sin modelo 3D sólo aparece **Imágenes**. En Ajustes se puede hacer que abra en Imágenes y, en la caja «Ficha técnica» de cada máquina, elegir su propia vista inicial; si falta lo elegido (no hay modelo 3D o no hay fotos), abre con lo otro. Sin fotos, se muestra el icono de su categoría.
 
 ## Fichas técnicas en PDF
 
@@ -219,7 +220,7 @@ El visitante junta las máquinas que le interesan con el botón + y envía una s
 | --- | --- | --- |
 | Título e introducción | «Nuestras máquinas» y un texto breve | Cabecera del catálogo |
 | Dirección | maquinas | Cambiarla después rompe los QR ya impresos |
-| Vista inicial de la ficha | 3D · AR (si la máquina tiene modelo) | O «Imágenes» |
+| Vista inicial de la ficha | 3D · AR (si la máquina tiene modelo) | O «Imágenes». Cada máquina puede tener la suya (caja «Ficha técnica» o Plataformas) |
 | Datos comunes | Atención al cliente: 24/7/365 · Servicio técnico: Propio en toda España | Una línea por dato, formato «Etiqueta: valor»; salen en todas las fichas |
 | Enviar a | El correo del administrador de WordPress | Uno o varios, separados por comas |
 | Copia en el panel | Activada | Guarda cada solicitud en Máquinas → Solicitudes |
@@ -250,6 +251,7 @@ También se pueden poner en `wp-config.php`, fuera de la base de datos: `define(
 - Cada máquina se empareja por su identificador de Plataformas y, la primera vez, por su dirección (`/maquinas/block-car/`). Las nuevas se crean; las que se despublican o desaparecen en Plataformas pasan a **borrador** (nunca se borran).
 - Fotos, PDF y GLB se copian a la **biblioteca de medios** una sola vez: si no cambian, no se vuelven a descargar.
 - El modelo 3D que llega es el que Plataformas prepara para la web: girado, a la medida de la ficha, en metros y con las gráficas corregidas.
+- La vista inicial de la ficha («3D · AR» o «Imágenes») también se elige en Plataformas, máquina a máquina.
 - La **primera** sincronización no vacía nada que la web tenga y Plataformas todavía no; a partir de ahí, la web es un espejo exacto.
 - Las máquinas que solo existen en la web (no están en Plataformas) no se tocan.
 

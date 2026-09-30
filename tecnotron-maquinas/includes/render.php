@@ -199,8 +199,10 @@ function tnm_render_card( $m, $i = 0 ) {
 function tnm_render_ficha( $m, $context = 'pagina' ) {
 	$post  = get_post( $m['id'] );
 	$h     = 'pagina' === $context ? 'h1' : 'h2';
-	// Con modelo 3D la ficha abre en «3D · AR» (salvo que Ajustes diga «Imágenes»); sin modelo sólo hay «Imágenes».
-	$vista = $m['glb'] && ( '3d' === tnm_opt( 'vista_ficha' ) || ! $m['imagenes'] ) ? '3d' : 'imagenes';
+	// Vista inicial: la de la máquina o, si no tiene, la de Ajustes. Si falta lo elegido, se abre lo otro:
+	// sin modelo 3D sólo hay «Imágenes» y, sin fotos, con modelo, se abre en «3D · AR».
+	$pref  = in_array( $m['vista'], array( '3d', 'imagenes' ), true ) ? $m['vista'] : tnm_opt( 'vista_ficha' );
+	$vista = $m['glb'] && ( '3d' === $pref || ! $m['imagenes'] ) ? '3d' : 'imagenes';
 	$tabs  = array();
 	if ( $m['glb'] ) {
 		$tabs['3d'] = array( 'cube', '3D · AR' );

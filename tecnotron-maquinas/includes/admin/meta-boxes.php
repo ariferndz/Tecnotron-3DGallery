@@ -172,6 +172,14 @@ function tnm_box_ficha( $post ) {
 	</div>
 	<p class="tnm-help">La superficie ocupada se calcula sola (ancho × largo); rellénala sólo si quieres otro valor. Con las tres medidas se dibuja el esquema de dimensiones de la ficha.</p>
 	<label class="tnm-check"><input type="checkbox" name="tnm[destacada]" value="1" <?php checked( get_post_meta( $post->ID, '_tnm_destacada', true ) ); ?>> Destacada: mostrar entre las primeras del catálogo</label>
+	<?php $vista = (string) get_post_meta( $post->ID, '_tnm_vista', true ); ?>
+	<p class="tnm-vista"><label>Vista inicial de la ficha
+		<select name="tnm[vista]">
+			<option value="" <?php selected( $vista, '' ); ?>>Como en Ajustes (<?php echo '3d' === tnm_opt( 'vista_ficha' ) ? '3D · AR' : 'Imágenes'; ?>)</option>
+			<option value="3d" <?php selected( $vista, '3d' ); ?>>3D · AR</option>
+			<option value="imagenes" <?php selected( $vista, 'imagenes' ); ?>>Imágenes</option>
+		</select></label>
+		<span class="tnm-help">Si falta lo elegido (no hay modelo 3D o no hay fotos), la ficha abre con lo otro.</span></p>
 	<?php
 }
 
@@ -284,6 +292,7 @@ add_action(
 			update_post_meta( $post_id, '_tnm_' . $k, tnm_num( $in[ $k ] ?? '' ) );
 		}
 		update_post_meta( $post_id, '_tnm_destacada', empty( $in['destacada'] ) ? 0 : 1 );
+		update_post_meta( $post_id, '_tnm_vista', in_array( $in['vista'] ?? '', array( '3d', 'imagenes' ), true ) ? $in['vista'] : '' );
 		update_post_meta( $post_id, '_tnm_galeria', implode( ',', array_filter( array_map( 'absint', explode( ',', (string) ( $in['galeria'] ?? '' ) ) ) ) ) );
 		update_post_meta( $post_id, '_tnm_glb_id', absint( $in['glb_id'] ?? 0 ) ?: '' );
 		update_post_meta( $post_id, '_tnm_glb_url', esc_url_raw( $in['glb_url'] ?? '' ) );

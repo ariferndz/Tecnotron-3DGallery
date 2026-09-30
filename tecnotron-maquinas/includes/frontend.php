@@ -205,6 +205,7 @@ function tnm_maquina_publica( $post ) {
 		'fichas'       => $m['fichas'],
 		'descripcion'  => tnm_html_a_texto( $post->post_content ),
 		'destacada'    => $m['destacada'],
+		'vista'        => $m['vista'],
 		'orden'        => (int) $post->menu_order,
 		'url'          => $m['url'],
 		'visor'        => $m['visor'],

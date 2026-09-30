@@ -20,6 +20,14 @@ try {
   await d.waitForSelector('.tnm-card');
   const total = await d.locator('.tnm-card').count();
   comprobar(total === 42, 'el catálogo muestra las 42 máquinas', total);
+  // La Grúa de tren lleva una foto vertical (datos de demostración): las tarjetas no pueden cambiar de alto por eso
+  // (el tamaño lo da el CSS: no hace falta esperar a que carguen, y las de abajo se cargan al llegar a ellas)
+  const cajas = await d.$$eval('.tnm-card-media', ms => ms.map(m => {
+    const r = m.getBoundingClientRect(), i = m.querySelector('img'), ri = i && i.getBoundingClientRect();
+    return { alto: Math.round(r.height), dentro: !ri || (ri.top >= r.top - 1 && ri.bottom <= r.bottom + 1 && ri.left >= r.left - 1 && ri.right <= r.right + 1) };
+  }));
+  const altos = [...new Set(cajas.map(c => c.alto))];
+  comprobar(altos.length === 1 && cajas.every(c => c.dentro), 'todas las fotos del catálogo caben en su tarjeta, del mismo alto (también las verticales)', `${altos.join(', ')} px`);
   await shot(d, '1-catalogo');
 
   await d.fill('[data-tnm-q]', 'peppa');
@@ -107,6 +115,11 @@ try {
 
   await d.goto(BASE + '/maquinas/grua-de-tren/');
   comprobar((await d.locator('.tnm-dl[href$=".pdf"]').count()) === 2, 'la Grúa de tren ofrece sus 2 fichas PDF');
+  const vertical = await d.$eval('.tnm-f-stage', el => {
+    const r = el.getBoundingClientRect(), ri = el.querySelector('.tnm-slide img').getBoundingClientRect();
+    return { cabe: ri.top >= r.top - 1 && ri.bottom <= r.bottom + 1, texto: `foto ${Math.round(ri.width)}×${Math.round(ri.height)} en ${Math.round(r.width)}×${Math.round(r.height)}` };
+  });
+  comprobar(vertical.cabe, 'en la página de la máquina, la foto vertical cabe entera sin desplazarse', vertical.texto);
   await d.goto(BASE + '/maquinas/categoria/carruseles/');
   const enCategoria = await d.locator('.tnm-card').count();
   comprobar(enCategoria === carruseles, 'la página de categoría lista sus máquinas', `${enCategoria} · ${(await d.textContent('.tnm-hero-title')).trim()}`);

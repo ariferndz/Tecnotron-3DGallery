@@ -1,7 +1,7 @@
 === Tecnotron Máquinas ===
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 License: GPLv2 or later
 
 Catálogo de máquinas con ficha técnica, carrusel de imágenes, visor 3D con realidad aumentada (model-viewer), QR, fichas PDF y solicitudes de presupuesto.
@@ -33,6 +33,10 @@ Catálogo de máquinas con ficha técnica, carrusel de imágenes, visor 3D con r
 * pdf-lib 1.17.1 (MIT): dentro de assets/vendor/ficha-pdf.js, la ficha técnica en PDF
 
 == Cambios ==
+= 1.5.0 =
+* Las fotos encajan siempre enteras en su recuadro, sean verticales, cuadradas o apaisadas: todas las tarjetas del catálogo tienen el mismo alto y el carrusel de la ficha ya no se desborda ni obliga a desplazarse.
+* Vista inicial de la ficha por máquina («3D · AR» o «Imágenes»), en la caja «Ficha técnica» o desde Plataformas. Si falta lo elegido, la ficha abre con lo otro.
+
 = 1.4.0 =
 * Sincronización con Plataformas: las fichas (descripción, características, fotos, PDF y modelo 3D) se escriben en Plataformas y la web las copia sola, cada 15 minutos y en cuanto Plataformas avisa de un cambio (aviso firmado con HMAC). Los ficheros se descargan una sola vez a la biblioteca de medios.
 * Mientras está conectada, las máquinas sincronizadas muestran «Editar en Plataformas» y sus cajas quedan bloqueadas; lo que se toque aquí vuelve a lo de Plataformas en la siguiente lectura. Las que desaparecen o se despublican allí pasan a borrador, nunca se borran.

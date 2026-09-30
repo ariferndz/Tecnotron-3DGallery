@@ -64,6 +64,17 @@ try {
   const pub = await p.evaluate(async () => (await (await fetch('/wp-json/tecnotron/v1/maquinas')).json()).find(m => m.slug === 'block-car'));
   comprobar(pub.consumo === '0,2 kW' && Number(pub.peso_kg) === 120.5, 'la API refleja los cambios', `${pub.consumo} · ${pub.peso_kg} kg`);
 
+  // Vista inicial por máquina: Block Car tiene 3D, pero se le puede pedir que abra en «Imágenes»
+  const vistaInicial = async () => (/data-vista="(\w+)"/.exec((await p.evaluate(async i => (await (await fetch(`/wp-json/tecnotron/v1/maquinas/${i}/ficha`)).json()).html, id)) || '') || [])[1];
+  await p.selectOption('select[name="tnm[vista]"]', 'imagenes');
+  await p.click('#publish');
+  await p.waitForSelector('#message');
+  comprobar((await vistaInicial()) === 'imagenes', 'la vista inicial de la ficha se elige por máquina', await vistaInicial());
+  await p.selectOption('select[name="tnm[vista]"]', '');
+  await p.click('#publish');
+  await p.waitForSelector('#message');
+  comprobar((await vistaInicial()) === '3d', '«Como en Ajustes» vuelve a la vista general (3D · AR)');
+
   /* ---------- convertir un OBJ con su MTL y su textura ---------- */
   const diggy = await p.evaluate(async () => (await (await fetch('/wp-json/tecnotron/v1/maquinas')).json()).find(m => m.slug === 'diggy').id);
   await p.goto(`${BASE}/wp-admin/post.php?post=${diggy}&action=edit`);

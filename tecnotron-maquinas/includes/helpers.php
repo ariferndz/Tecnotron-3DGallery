@@ -136,6 +136,7 @@ function tnm_maquina( $post ) {
 		$m['superficie'] = round( $m['ancho'] * $m['largo'] / 10000, 2 );
 	}
 	$m['destacada'] = (bool) get_post_meta( $post->ID, '_tnm_destacada', true );
+	$m['vista']     = (string) get_post_meta( $post->ID, '_tnm_vista', true ); // '3d', 'imagenes' o '' (la de Ajustes)
 	$m['glb']       = tnm_glb_url( $post->ID );
 	$m['cat']       = tnm_categoria_de( $post->ID );
 	$m['imagenes']  = tnm_imagenes( $post->ID );

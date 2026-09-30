@@ -137,6 +137,18 @@ function tnm_datos_demo( $modelos ) {
 		}
 	}
 
+	// Una foto vertical (como muchas de las de fábrica) para comprobar que el catálogo y el carrusel la encajan
+	$grua = get_page_by_path( 'grua-de-tren', OBJECT, TNM_CPT );
+	if ( $grua && ! has_post_thumbnail( $grua ) ) {
+		$tmp = wp_tempnam( 'foto-vertical.png' );
+		copy( __DIR__ . '/fixtures/foto-vertical.png', $tmp );
+		$foto = media_handle_sideload( array( 'name' => 'grua-de-tren-vertical.png', 'tmp_name' => $tmp ), $grua->ID );
+		if ( ! is_wp_error( $foto ) ) {
+			set_post_thumbnail( $grua->ID, $foto );
+			echo "✓ grua-de-tren: foto vertical\n";
+		}
+	}
+
 	// Logo de la ficha PDF: el de Tecnotron, subido a la biblioteca (el de www.tecnotron.es no se puede leer desde otro dominio)
 	$ajustes = get_option( TNM_OPT, array() );
 	$ajustes = is_array( $ajustes ) ? $ajustes : array();
