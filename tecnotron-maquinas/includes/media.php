@@ -10,7 +10,8 @@ defined( 'ABSPATH' ) || exit;
 add_filter(
 	'upload_mimes',
 	function ( $mimes ) {
-		if ( current_user_can( 'upload_files' ) ) {
+		// La sincronización con Plataformas corre sin usuario (tarea programada o aviso): también puede traer modelos
+		if ( current_user_can( 'upload_files' ) || tnm_sincronizando() ) {
 			$mimes['glb'] = 'model/gltf-binary';
 		}
 		return $mimes;

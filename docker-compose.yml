@@ -28,6 +28,9 @@ services:
         condition: service_healthy
     ports:
       - "8080:80"
+    # Las pruebas de sincronización levantan un Plataformas de mentira en el ordenador (tests/e2e-sincronizacion.mjs)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpress

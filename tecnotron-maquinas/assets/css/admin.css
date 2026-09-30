@@ -58,3 +58,13 @@
 .tnm-obj-status:empty{display:none}
 .tnm-obj-status.tnm-ok{background:#edfaef;color:#1e4620}
 .tnm-obj-status.tnm-warn{background:#fcf9e8;color:#614a00}
+/* sincronización con Plataformas */
+.tnm-sync-estado{max-width:900px;margin:4px 0 18px;padding:10px 14px;border:1px solid #c3c4c7;border-left:4px solid #8b5cf6;border-radius:4px;background:#fff}
+.tnm-sync-estado p{margin:.4em 0}
+.tnm-sync-estado.tnm-sync-error{border-left-color:#d63638}
+.tnm-sync-estado details ul{margin:6px 0 0 18px;list-style:disc;color:#614a00}
+.tnm-sync-aviso{margin:14px 0 4px!important}
+.tnm-sync-aviso p{font-size:13px}
+/* máquina sincronizada: se ve, pero no se edita aquí */
+.tnm-sincronizada #titlediv,.tnm-sincronizada #postdivrich,.tnm-sincronizada .tnm-editor-help,.tnm-sincronizada #postimagediv .inside,
+.tnm-sincronizada #tnm_ficha .inside,.tnm-sincronizada #tnm_galeria .inside,.tnm-sincronizada #tnm_modelo .inside>:not(.tnm-glb-preview),.tnm-sincronizada #tnm_fichas .inside,.tnm-sincronizada #tn_categoriadiv .inside,.tnm-sincronizada #pageparentdiv .inside{opacity:.6;pointer-events:none;user-select:none}

@@ -1,7 +1,7 @@
 === Tecnotron Máquinas ===
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 
 Catálogo de máquinas con ficha técnica, carrusel de imágenes, visor 3D con realidad aumentada (model-viewer), QR, fichas PDF y solicitudes de presupuesto.
@@ -11,6 +11,7 @@ Catálogo de máquinas con ficha técnica, carrusel de imágenes, visor 3D con r
 2. Ajustes → Enlaces permanentes → Guardar (sólo si /maquinas/ diera error 404).
 3. Máquinas → Importar / exportar → «Crear el catálogo inicial» (opcional).
 4. Máquinas → Ajustes: correo para las solicitudes y datos comunes.
+5. Máquinas → Ajustes → «Sincronización con Plataformas» (opcional): dirección, clave del catálogo y secreto de los avisos. Desde ese momento las fichas se escriben en Plataformas y esta web las copia sola.
 
 == Direcciones ==
 * /maquinas/ — catálogo
@@ -18,6 +19,7 @@ Catálogo de máquinas con ficha técnica, carrusel de imágenes, visor 3D con r
 * /maquinas/<máquina>/ — ficha
 * /maquinas/<máquina>/visor/ — visor 3D a pantalla completa (destino del QR)
 * /wp-json/tecnotron/v1/maquinas — lista pública en JSON
+* /wp-json/tecnotron/v1/sincronizar — aviso firmado de Plataformas (POST)
 * Shortcode: [tecnotron_catalogo] o [tecnotron_catalogo categoria="kiddie-rides"]
 
 == Personalizar ==
@@ -31,6 +33,12 @@ Catálogo de máquinas con ficha técnica, carrusel de imágenes, visor 3D con r
 * pdf-lib 1.17.1 (MIT): dentro de assets/vendor/ficha-pdf.js, la ficha técnica en PDF
 
 == Cambios ==
+= 1.4.0 =
+* Sincronización con Plataformas: las fichas (descripción, características, fotos, PDF y modelo 3D) se escriben en Plataformas y la web las copia sola, cada 15 minutos y en cuanto Plataformas avisa de un cambio (aviso firmado con HMAC). Los ficheros se descargan una sola vez a la biblioteca de medios.
+* Mientras está conectada, las máquinas sincronizadas muestran «Editar en Plataformas» y sus cajas quedan bloqueadas; lo que se toque aquí vuelve a lo de Plataformas en la siguiente lectura. Las que desaparecen o se despublican allí pasan a borrador, nunca se borran.
+* La primera sincronización no vacía ningún dato que la web tenga y Plataformas todavía no.
+* La lista pública en JSON incluye la descripción en texto, «destacada» y el orden (para importarlos en Plataformas).
+
 = 1.3.0 =
 * Temas con cabecera fija (Impreza en tecnotron.es y cualquier otro): la ficha y el catálogo empiezan debajo de la cabecera, y la barra de filtros y los anclajes (#contacto) se quedan justo debajo al bajar.
 * Ficha técnica en PDF: logo de Tecnotron por defecto (Ajustes → dirección del logo), sobre placa blanca de esquinas redondeadas; los logos blancos se detectan y van sin placa.

@@ -21,3 +21,13 @@ add_action(
 		}
 	}
 );
+
+// Dentro del contenedor, WordPress no se alcanza a sí mismo en localhost:8080 (ése es el puerto de fuera): las tareas
+// programadas que lanza una visita (por ejemplo, la sincronización tras un aviso de Plataformas) van al puerto 80.
+add_filter(
+	'cron_request',
+	function ( $r ) {
+		$r['url'] = preg_replace( '#^https?://[^/]+#', 'http://127.0.0.1', $r['url'] );
+		return $r;
+	}
+);

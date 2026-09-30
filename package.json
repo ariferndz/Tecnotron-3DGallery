@@ -1,6 +1,6 @@
 {
   "name": "tecnotron-3dgallery",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": true,
   "description": "Catálogo de máquinas Tecnotron para WordPress: plugin, modelos 3D y herramientas para regenerarlo.",
   "type": "module",
@@ -16,9 +16,10 @@
     "dev": "docker compose up -d",
     "dev:datos": "docker compose exec -T -u www-data -e HOME=/tmp wordpress php /repo/tests/datos-demo.php /var/www/html http://localhost:8080",
     "dev:parar": "docker compose down",
-    "test": "node tests/e2e-publico.mjs && node tests/e2e-admin.mjs",
+    "test": "node tests/e2e-publico.mjs && node tests/e2e-admin.mjs && node tests/e2e-sincronizacion.mjs",
     "test:publico": "node tests/e2e-publico.mjs",
-    "test:admin": "node tests/e2e-admin.mjs"
+    "test:admin": "node tests/e2e-admin.mjs",
+    "test:sincronizacion": "node tests/e2e-sincronizacion.mjs"
   },
   "devDependencies": {
     "@gltf-transform/cli": "4.5.1",
