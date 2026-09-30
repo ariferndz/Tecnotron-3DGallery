@@ -1,0 +1,8 @@
+node_modules
+# Resultados que se regeneran
+prototipo/catalogo-maquinas.html
+tests/capturas/
+modelos/originales/
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,33 @@
+{
+  "name": "tecnotron-3dgallery",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Catálogo de máquinas Tecnotron para WordPress: plugin, modelos 3D y herramientas para regenerarlo.",
+  "type": "module",
+  "license": "GPL-2.0-or-later",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "optimizar": "node scripts/optimizar-glb.mjs",
+    "imagenes": "node scripts/imagenes-glb.mjs",
+    "prototipo": "node scripts/prototipo.mjs",
+    "dev": "docker compose up -d",
+    "dev:datos": "docker compose exec -T -u www-data -e HOME=/tmp wordpress php /repo/tests/datos-demo.php /var/www/html http://localhost:8080",
+    "dev:parar": "docker compose down",
+    "test": "node tests/e2e-publico.mjs && node tests/e2e-admin.mjs",
+    "test:publico": "node tests/e2e-publico.mjs",
+    "test:admin": "node tests/e2e-admin.mjs"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "4.5.1",
+    "@gltf-transform/core": "4.5.1",
+    "@gltf-transform/extensions": "4.5.1",
+    "@google/model-viewer": "4.3.1",
+    "fflate": "^0.8.2",
+    "playwright": "1.56.1",
+    "qrcode-generator": "1.5.2",
+    "sharp": "^0.35.5"
+  }
+}

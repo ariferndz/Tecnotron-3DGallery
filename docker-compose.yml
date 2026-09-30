@@ -1,0 +1,45 @@
+# Entorno de desarrollo: WordPress + MariaDB con el plugin de esta carpeta ya instalado.
+#
+#   docker compose up -d     → http://localhost:8080  (npm run dev)
+#   npm run dev:datos        → instala WordPress y carga el catálogo de demostración (admin / admin123)
+#   docker compose down      → lo detiene; los datos se conservan (con «down -v» se borran)
+#
+# Los cambios en tecnotron-maquinas/ se ven al recargar la página: la carpeta está enlazada, no copiada.
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: wordpress
+    volumes:
+      - db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+
+  wordpress:
+    image: wordpress:6.8-php8.3-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: 1
+    volumes:
+      - wp:/var/www/html
+      - ./tecnotron-maquinas:/var/www/html/wp-content/plugins/tecnotron-maquinas
+      - ./dev/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - .:/repo:ro
+
+volumes:
+  db:
+  wp:

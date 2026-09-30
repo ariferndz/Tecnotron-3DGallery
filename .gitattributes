@@ -1,0 +1,10 @@
+# Saltos de línea LF en todos los sistemas: el zip del plugin sale idéntico en Windows, macOS y Linux.
+* text=auto eol=lf
+# Sin conversiones: se copian tal cual desde npm o se editan en Excel.
+tecnotron-maquinas/assets/vendor/** -text
+*.csv -text
+*.glb binary
+*.png binary
+*.webp binary
+*.jpg binary
+*.zip binary

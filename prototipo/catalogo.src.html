@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0d0d10">
+<title>Nuestras máquinas · Tecnotron</title>
+<meta name="description" content="Catálogo de máquinas Tecnotron: características técnicas, dimensiones, ficha descargable, vista 3D y realidad aumentada a tamaño real.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d10; --bg2:#131317; --card:#18181d; --card2:#202027; --line:#2a2a32; --line2:#3b3b45;
+  --ink:#f5f5f7; --muted:#b3b3bd; --faint:#7d7d89;
+  --accent:#8b5cf6; --accent-hi:#a78bfa; --accent-soft:rgba(139,92,246,.16); --pink:#e879f9;
+  --ok:#34d399; --danger:#f87171;
+  --r:18px; --r-sm:12px; --head:68px;
+  --shadow:0 18px 50px rgba(0,0,0,.55);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--head) + 16px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Poppins,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,.btn,.pill,.chip,.eyebrow,.logo-txt,.nav a{font-family:Montserrat,Poppins,system-ui,sans-serif}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+img{max-width:100%;display:block}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent-hi);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ic{width:1.15em;height:1.15em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em}
+.wrap{width:min(1240px,100%);margin:0 auto;padding:0 max(20px,env(safe-area-inset-left))}
+
+/* ---------- botones ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 20px;border-radius:999px;border:1.5px solid transparent;font-size:.8rem;font-weight:700;letter-spacing:.02em;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s,color .15s,transform .1s}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.primary:hover{background:#7c4ff0}
+.btn.ghost{background:transparent;border-color:rgba(255,255,255,.75);color:#fff}
+.btn.ghost:hover{background:#fff;color:#111}
+.btn.soft{background:var(--card2);border-color:var(--line2)}
+.btn.soft:hover{border-color:var(--faint)}
+.btn.sm{height:38px;padding:0 16px;font-size:.74rem}
+.btn.lg{height:52px;padding:0 28px;font-size:.86rem}
+.btn .ic{width:18px;height:18px}
+.icon-btn{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;border:1px solid var(--line2);background:var(--card);color:var(--ink);flex:none}
+.icon-btn:hover{border-color:var(--faint)}
+.icon-btn .ic{width:19px;height:19px}
+.eyebrow{margin:0 0 8px;font-size:.7rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-hi)}
+
+/* ---------- aviso de prototipo ---------- */
+.proto{background:linear-gradient(90deg,#3b1f78,#5b21b6);color:#ede9fe;font-size:.74rem;text-align:center;padding:7px 44px 7px 16px;position:relative}
+.proto button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:inherit;width:30px;height:30px;display:grid;place-items:center}
+
+/* ---------- cabecera ---------- */
+.site-head{position:sticky;top:0;z-index:40;background:rgba(13,13,16,.86);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid rgba(255,255,255,.06);padding-top:env(safe-area-inset-top)}
+.head-in{display:flex;align-items:center;gap:24px;height:var(--head)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex:none}
+.logo-mark{width:30px;height:30px;border-radius:50%;background:conic-gradient(#ef4444 0 60deg,#f59e0b 0 120deg,#84cc16 0 180deg,#06b6d4 0 240deg,#6366f1 0 300deg,#d946ef 0);position:relative;box-shadow:0 0 0 2px #fff inset}
+.logo-mark::after{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--bg);box-shadow:0 0 0 2px #fff}
+.logo-txt{font-size:1.2rem;font-weight:800;letter-spacing:-.01em}
+.nav{display:flex;gap:28px;margin-left:auto}
+.nav a{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:#fff;opacity:.92}
+.nav a:hover,.nav a.on{color:var(--accent-hi);opacity:1}
+.menu-btn{display:none}
+.short{display:none}
+
+/* ---------- cabecera del catálogo ---------- */
+.hero{padding:56px 0 26px;position:relative}
+.hero::before{content:"";position:absolute;inset:-60px 0 auto;height:320px;background:radial-gradient(60% 100% at 30% 0%,rgba(139,92,246,.22),transparent 70%);pointer-events:none;z-index:-1}
+.hero h1{margin:0;font-size:clamp(2rem,5vw,3.4rem);font-weight:800;line-height:1.05;letter-spacing:-.02em}
+.lead{max-width:640px;margin:14px 0 0;color:var(--muted);font-size:1rem}
+.hero-stats{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:22px 0 0;padding:0}
+.hero-stats li{display:flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg2);font-size:.8rem;color:var(--muted)}
+.hero-stats b{color:var(--ink);font-family:Montserrat,sans-serif}
+.hero-stats .ic{color:var(--accent-hi)}
+
+/* ---------- barra de filtros ---------- */
+.toolbar{position:sticky;top:calc(var(--head) + env(safe-area-inset-top));z-index:30;background:rgba(13,13,16,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:12px 0}
+.tb-row{display:flex;gap:10px;align-items:center}
+.search{flex:1;display:flex;align-items:center;gap:10px;height:46px;padding:0 16px;border:1px solid var(--line2);border-radius:999px;background:var(--bg2);color:var(--faint);min-width:0}
+.search:focus-within{border-color:var(--accent)}
+.search input{flex:1;min-width:0;height:100%;border:0;outline:0;background:none;color:var(--ink);font-size:16px}
+.search input::placeholder{color:var(--faint)}
+.chip-btn{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 16px;border-radius:999px;border:1px solid var(--line2);background:var(--bg2);color:var(--ink);font-size:.8rem;font-weight:600;white-space:nowrap}
+.chip-btn:hover{border-color:var(--faint)}
+.chip-btn[aria-pressed=true],.chip-btn[aria-expanded=true],.chip-btn.on{border-color:var(--accent);background:var(--accent-soft);color:#fff}
+.chip-btn .ic{color:var(--accent-hi)}
+.sort select{height:46px;padding:0 38px 0 16px;border-radius:999px;border:1px solid var(--line2);background:var(--bg2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23b3b3bd' stroke-width='2' stroke-linecap='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center;appearance:none;-webkit-appearance:none;font-size:.8rem;font-weight:600}
+.cats{display:flex;gap:8px;margin-top:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.cats::-webkit-scrollbar{display:none}
+.chip{flex:none;display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:.74rem;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+.chip i{font-style:normal;font-size:.68rem;color:var(--faint);font-weight:600}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--c,var(--accent))}
+.chip:hover{color:var(--ink);border-color:var(--line2)}
+.chip[aria-pressed=true]{background:#fff;border-color:#fff;color:#111}
+.chip[aria-pressed=true] i{color:#555}
+.results{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:18px 0 14px}
+.count{margin:0;color:var(--muted);font-size:.84rem}
+.count b{color:var(--ink)}
+.active{display:flex;gap:8px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 6px 0 12px;border-radius:999px;background:var(--accent-soft);border:1px solid rgba(139,92,246,.45);font-size:.74rem;font-weight:600}
+.tag button{width:24px;height:24px;border-radius:50%;border:0;background:rgba(255,255,255,.1);display:grid;place-items:center;padding:0}
+.tag .ic{width:13px;height:13px}
+
+/* ---------- rejilla ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));gap:18px;padding-bottom:70px}
+.card{position:relative;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s}
+.card:hover{border-color:var(--line2);transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,.4)}
+.card-media{position:relative;display:grid;place-items:center;aspect-ratio:4/3;padding:14px;border:0;background:radial-gradient(70% 70% at 50% 55%,color-mix(in srgb,var(--c) 22%,transparent),transparent 72%),var(--bg2);color:var(--c)}
+.card-media img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 12px 16px rgba(0,0,0,.45));transition:transform .35s}
+.card:hover .card-media img{transform:scale(1.04)}
+.ph{display:grid;place-items:center;width:44%;aspect-ratio:1;border-radius:50%;background:color-mix(in srgb,var(--c) 12%,transparent);border:1px dashed color-mix(in srgb,var(--c) 45%,transparent)}
+.ph .ic{width:46%;height:46%;stroke-width:1.6}
+.badges{position:absolute;left:10px;top:10px;display:flex;gap:6px}
+.badge{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.18);color:#fff;font:700 .64rem/1 Montserrat,sans-serif;letter-spacing:.06em}
+.badge .ic{width:13px;height:13px;color:var(--accent-hi)}
+.card-body{display:flex;flex-direction:column;gap:4px;padding:14px 16px 16px;flex:1}
+.card-cat{margin:0;font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
+.card-name{margin:0;font-size:.98rem;font-weight:800;line-height:1.25}
+.card-dims{margin:2px 0 0;display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.78rem;font-variant-numeric:tabular-nums}
+.card-dims .ic{color:var(--faint);width:15px;height:15px}
+.card-actions{display:flex;gap:8px;margin-top:auto;padding-top:14px}
+.pill{flex:1;display:inline-flex;align-items:center;justify-content:center;height:40px;border-radius:999px;border:1.5px solid rgba(255,255,255,.8);background:transparent;color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;transition:background .15s,color .15s}
+.pill:hover{background:#fff;color:#111}
+.add-btn{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line2);background:transparent;color:var(--ink);flex:none;transition:all .15s}
+.add-btn:hover{border-color:var(--accent-hi);color:var(--accent-hi)}
+.add-btn[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.add-btn .ic{width:18px;height:18px}
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);border:1px dashed var(--line2);border-radius:var(--r)}
+.empty b{display:block;color:var(--ink);font-size:1.05rem;margin-bottom:6px}
+
+/* ---------- ficha ---------- */
+.ficha{padding:0;border:1px solid var(--line2);border-radius:24px;background:var(--bg2);color:var(--ink);width:min(1180px,calc(100vw - 48px));height:min(840px,calc(100vh - 48px));height:min(840px,calc(100dvh - 48px));max-width:none;max-height:none;box-shadow:var(--shadow);overflow:hidden}
+.ficha::backdrop{background:rgba(5,5,8,.72);backdrop-filter:blur(6px)}
+.ficha[open]{animation:pop .22s ease}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.99)}}
+.f-shell{display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100%}
+.f-top{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.f-crumb{flex:1;min-width:0;font-size:.74rem;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.f-grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);min-height:0}
+.f-media{position:relative;display:grid;grid-template-rows:auto minmax(0,1fr);min-height:0;background:radial-gradient(80% 70% at 50% 60%,color-mix(in srgb,var(--c) 16%,transparent),transparent 75%),#101014;border-right:1px solid var(--line)}
+.f-tabs{position:absolute;z-index:3;top:14px;left:14px;display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12)}
+.f-tabs button{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:0;border-radius:999px;background:none;color:var(--muted);font:700 .72rem Montserrat,sans-serif}
+.f-tabs button[aria-selected=true]{background:#fff;color:#111}
+.f-tabs .ic{width:15px;height:15px}
+.f-stage{grid-row:1/-1;position:relative;min-height:0}
+.f-stage>img{width:100%;height:100%;object-fit:contain;padding:48px 28px 28px;filter:drop-shadow(0 18px 24px rgba(0,0,0,.5))}
+.f-stage .ph{position:absolute;inset:0;margin:auto;width:min(46%,240px)}
+model-viewer{width:100%;height:100%;display:block;--poster-color:transparent;--progress-bar-color:var(--accent);background:transparent}
+.mv-progress{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);width:160px;height:4px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}
+.mv-progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.ar-btn{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 24px;border-radius:999px;border:0;background:#fff;color:#111;font:800 .82rem Montserrat,sans-serif;box-shadow:0 12px 30px rgba(0,0,0,.45);white-space:nowrap}
+.ar-btn .ic{width:20px;height:20px;color:var(--accent)}
+.stage-tools{position:absolute;z-index:3;left:14px;top:62px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;pointer-events:none}
+.stage-note{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);font-size:.7rem;color:#e4e4e7}
+.stage-note .ic{width:14px;height:14px;color:var(--ok)}
+.qr-open{position:absolute;z-index:3;left:50%;bottom:18px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 20px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.6);backdrop-filter:blur(8px);color:#fff;font:700 .76rem Montserrat,sans-serif;white-space:nowrap}
+.qr-open .ic{color:var(--accent-hi)}
+.qr-pop{position:absolute;z-index:4;left:50%;bottom:76px;transform:translateX(-50%);width:260px;padding:16px;border-radius:18px;background:#fff;color:#111;text-align:center;box-shadow:var(--shadow)}
+.qr-pop svg{width:170px;height:170px;display:block;margin:0 auto 10px}
+.qr-pop p{margin:0;font-size:.76rem;line-height:1.45}
+.qr-pop small{display:block;margin-top:6px;color:#666;font-size:.66rem}
+.stage-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:70px 24px 24px;text-align:center;color:var(--muted)}
+.stage-empty .ph{position:static;width:130px}
+.stage-empty b{color:var(--ink)}
+.stage-empty p{margin:0;font-size:.84rem}
+.drop{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;border:1.5px dashed var(--line2);font-size:.76rem;color:var(--muted);cursor:pointer}
+.drop:hover,.drop.over{border-color:var(--accent-hi);color:#fff}
+.drop input{display:none}
+.f-info{overflow:auto;padding:28px 30px 30px;overscroll-behavior:contain}
+.f-info h2:focus{outline:none}
+.f-info h2{margin:0;font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800;line-height:1.1;letter-spacing:-.01em}
+.f-code{margin:8px 0 0;color:var(--muted);font-size:.84rem}
+.f-code b{color:var(--ink)}
+.f-h{margin:28px 0 12px;font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.desc{color:#dcdce2}
+.desc p{margin:0 0 12px}
+.desc ul{margin:-4px 0 12px;padding:0;list-style:none;display:grid;gap:6px}
+.desc li{position:relative;padding-left:22px}
+.desc li::before{content:"";position:absolute;left:4px;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--c,var(--accent))}
+.desc>:last-child{margin-bottom:0}
+.specs{margin:0;border-top:1px solid var(--line)}
+.spec{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:10px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.spec .ic{width:18px;height:18px;color:var(--c,var(--accent-hi))}
+.spec dt{color:var(--muted);font-size:.86rem}
+.spec dd{margin:0;text-align:right;font:700 .92rem Montserrat,sans-serif;font-variant-numeric:tabular-nums}
+.spec dd small{display:block;font:400 .68rem Poppins,sans-serif;color:var(--faint)}
+.dimfig{margin:0;padding:14px 12px 8px;border-radius:var(--r);background:var(--card);border:1px solid var(--line)}
+.dimfig svg{width:100%;height:auto;display:block}
+.downloads{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.dl{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:var(--r-sm);background:var(--card);border:1px solid var(--line);text-decoration:none;text-align:left;transition:border-color .15s}
+.dl:hover{border-color:var(--accent-hi)}
+.dl .fi{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--accent-soft);color:var(--accent-hi);flex:none}
+.dl span{flex:1;min-width:0}
+.dl b{display:block;font-size:.84rem}
+.dl small{color:var(--faint);font-size:.7rem}
+.dl>.ic{color:var(--faint)}
+.f-bar{display:flex;align-items:center;gap:10px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:rgba(19,19,23,.96)}
+.f-bar .grow{flex:1}
+.f-bar #fAdd[aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent);color:#fff}
+
+/* ---------- solicitud flotante ---------- */
+.tray{position:fixed;z-index:35;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(620px,calc(100% - 24px));display:flex;align-items:center;gap:12px;padding:8px 8px 8px 18px;border-radius:999px;background:rgba(28,28,34,.94);backdrop-filter:blur(14px);border:1px solid var(--line2);box-shadow:var(--shadow);animation:up .25s ease}
+@keyframes up{from{opacity:0;transform:translate(-50%,12px)}}
+.tray-n{display:grid;place-items:center;min-width:30px;height:30px;padding:0 8px;border-radius:999px;background:var(--accent);font:800 .8rem Montserrat,sans-serif}
+.tray-txt{flex:1;min-width:0;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tray-txt b{color:var(--ink)}
+
+/* ---------- contacto ---------- */
+.contact{padding:80px 0 100px;border-top:1px solid var(--line);background:radial-gradient(50% 60% at 85% 0%,rgba(139,92,246,.14),transparent 70%)}
+.contact-in{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:48px;align-items:start}
+.contact h2{margin:0;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;letter-spacing:-.01em}
+.contact-copy p{color:var(--muted);max-width:440px}
+.checks{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:12px}
+.checks li{display:flex;gap:10px;align-items:center;font-weight:500}
+.checks .ic{color:var(--ok)}
+.form{display:grid;gap:12px;padding:24px;border-radius:22px;background:var(--card);border:1px solid var(--line)}
+.sel-box{padding:12px 14px;border-radius:var(--r-sm);background:var(--bg2);border:1px dashed var(--line2)}
+.sel-title{margin:0 0 8px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.sel-chips{display:flex;flex-wrap:wrap;gap:6px}
+.sel-chips .muted{font-size:.78rem;color:var(--faint)}
+.field{position:relative}
+.field .ic{position:absolute;left:14px;top:15px;color:var(--faint);width:17px;height:17px}
+.field input,.field textarea{width:100%;height:48px;padding:0 14px 0 42px;border:1px solid var(--line2);border-radius:var(--r-sm);background:var(--bg2);font-size:16px;outline:0;transition:border-color .15s}
+.field textarea{height:120px;padding-top:12px;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--accent)}
+.field input::placeholder,.field textarea::placeholder{color:var(--faint)}
+.field.invalid input,.field.invalid textarea{border-color:var(--danger)}
+.field .err{display:none;margin:4px 2px 0;font-size:.72rem;color:var(--danger)}
+.field.invalid .err{display:block}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:.78rem;color:var(--muted);line-height:1.45}
+.consent input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--accent);flex:none}
+.consent a{color:var(--accent-hi);font-weight:600}
+.consent.invalid{color:var(--danger)}
+.form-note{margin:0;font-size:.7rem;color:var(--faint);text-align:center}
+.form-ok{padding:36px 24px;border-radius:22px;background:var(--card);border:1px solid var(--line);text-align:center}
+.form-ok .ic{width:48px;height:48px;color:var(--ok)}
+.form-ok h3{margin:10px 0 6px;font-size:1.3rem}
+.form-ok p{margin:0 auto 18px;color:var(--muted);max-width:380px}
+
+/* ---------- pie y aviso ---------- */
+.foot{padding:28px 0 calc(90px + env(safe-area-inset-bottom));border-top:1px solid var(--line);color:var(--faint);font-size:.76rem}
+.foot .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.toast{position:fixed;z-index:60;left:50%;width:max-content;max-width:calc(100vw - 32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;top:calc(var(--head) + 20px + env(safe-area-inset-top));transform:translate(-50%,-10px);padding:10px 18px;border-radius:999px;background:#fff;color:#111;font-weight:600;font-size:.82rem;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+#print-sheet{display:none}
+
+/* ---------- tableta ---------- */
+@media (max-width:980px){
+  .nav{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;padding:8px max(20px,env(safe-area-inset-left)) 16px;background:rgba(13,13,16,.98);border-bottom:1px solid var(--line)}
+  .nav.open{display:flex}
+  .nav a{padding:14px 0;border-bottom:1px solid var(--line);font-size:.86rem}
+  .menu-btn{display:inline-grid;margin-left:auto}
+  .head-cta{margin-left:0}
+  .contact-in{grid-template-columns:1fr;gap:28px}
+}
+/* ---------- móvil ---------- */
+@media (max-width:720px){
+  :root{--head:60px}
+  .wrap{padding:0 max(16px,env(safe-area-inset-left))}
+  .logo-mark{width:26px;height:26px}
+  .logo-mark::after{inset:8px}
+  .head-in{gap:8px}
+  .logo{gap:8px}
+  .logo-txt{font-size:.95rem}
+  .head-cta{height:38px;padding:0 14px;font-size:.7rem}
+  .long{display:none}
+  .short{display:inline}
+  .hero{padding:30px 0 16px}
+  .lead{font-size:.9rem}
+  .hero-stats{margin-top:16px;gap:8px}
+  .hero-stats li{padding:6px 12px;font-size:.74rem}
+  .hero-stats li:nth-child(n+3){display:none}
+  /* En el móvil la barra no se queda fija: ocuparía un tercio de la pantalla */
+  .toolbar{position:static;padding:10px 0}
+  .tb-row{flex-wrap:wrap;gap:8px}
+  .search{flex:1 1 100%;height:44px}
+  .chip-btn{height:40px;padding:0 12px;font-size:.74rem;flex:1;justify-content:center;min-width:0}
+  .sort{flex:1.25;min-width:0}
+  .sort select{width:100%;height:40px;padding:0 28px 0 12px;background-position:right 9px center;font-size:.74rem}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card-media{padding:8px}
+  .card-body{padding:10px 12px 12px}
+  .card-name{font-size:.84rem}
+  .card-dims{font-size:.7rem}
+  .card-cat{font-size:.58rem}
+  .pill{height:38px;font-size:.62rem;letter-spacing:.05em}
+  .add-btn{width:38px;height:38px}
+  .card-actions{padding-top:10px;gap:6px}
+  .badge{height:22px;padding:0 8px;font-size:.58rem}
+  /* ficha a pantalla completa, con la escena arriba y la barra de acciones fija abajo */
+  .ficha{width:100%;height:100%;max-height:100%;border-radius:0;border:0}
+  .f-top{padding:calc(8px + env(safe-area-inset-top)) 10px 8px}
+  .f-grid{grid-template-columns:1fr;overflow:auto;overscroll-behavior:contain}
+  .f-media{height:min(52vh,460px);border-right:0;border-bottom:1px solid var(--line)}
+  .f-info{overflow:visible;padding:20px 16px 24px}
+  .ar-btn{height:48px;font-size:.78rem;padding:0 20px}
+  .f-bar{gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+  .f-bar .btn{height:48px;padding:0 14px}
+  .f-bar .grow{display:none}
+  .f-bar #fQuote{flex:1}
+  .f-bar #fAdd .lbl{display:none}
+  .two{grid-template-columns:1fr}
+  .form{padding:16px}
+  .contact{padding:56px 0 80px}
+  .tray{border-radius:22px;padding:8px 8px 8px 14px}
+}
+
+/* ---------- ficha imprimible («Descargar ficha técnica») ---------- */
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff;color:#111}
+  body>*:not(#print-sheet){display:none!important}
+  #print-sheet{display:block;font:11pt/1.45 Poppins,Arial,sans-serif;color:#111}
+  .ps-head{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #111;padding-bottom:8px}
+  .ps-brand{font:800 16pt Montserrat,Arial,sans-serif;letter-spacing:-.01em}
+  .ps-doc{font-size:9pt;color:#555;text-align:right}
+  .ps-title{font:800 26pt/1.1 Montserrat,Arial,sans-serif;margin:16px 0 2px}
+  .ps-sub{color:#555;margin:0 0 12px}
+  .ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .ps-img{border:1px solid #ddd;border-radius:10px;padding:10px;height:70mm;display:grid;place-items:center}
+  .ps-img img{max-height:66mm;object-fit:contain}
+  .ps-img .ph{border:1px dashed #bbb;color:#888}
+  .ps-table{width:100%;border-collapse:collapse}
+  .ps-table th,.ps-table td{text-align:left;padding:6px 4px;border-bottom:1px solid #e3e3e3;font-size:10pt;vertical-align:top}
+  .ps-table th{color:#666;font-weight:500;width:42%}
+  .ps-desc h2,.ps-dim h2{font:700 9pt Montserrat,Arial,sans-serif;text-transform:uppercase;letter-spacing:.12em;color:#666;margin:14px 0 6px}
+  .ps-desc p{margin:0 0 6px}
+  .ps-desc ul{margin:0 0 6px;padding-left:18px}
+  .ps-dim{border:1px solid #ddd;border-radius:10px;padding:4px 12px 8px;margin-top:12px}
+  .ps-dim svg{display:block;width:100%;max-height:62mm;margin:0 auto}
+  .ps-foot{margin-top:18px;padding-top:8px;border-top:1px solid #ccc;font-size:8.5pt;color:#555;display:flex;justify-content:space-between}
+}
+</style>
+</head>
+<body id="top">
+
+<div class="proto" id="proto">Prototipo para validar antes de pasar a WordPress · datos de ejemplo, el formulario no envía. <button type="button" aria-label="Cerrar aviso" data-close-proto><i data-i="x"></i></button></div>
+
+<header class="site-head">
+  <div class="wrap head-in">
+    <a class="logo" href="#top" aria-label="Tecnotron, inicio"><span class="logo-mark" aria-hidden="true"></span><span class="logo-txt">TECNOTRON</span></a>
+    <nav class="nav" id="nav" aria-label="Principal">
+      <a href="#">Empresa</a><a class="on" href="#catalogo" aria-current="page">Productos</a><a href="#">App</a><a href="#">FAQ</a><a href="#contacto">Contacto</a>
+    </nav>
+    <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Menú"><i data-i="menu"></i></button>
+    <a class="btn primary sm head-cta" href="#contacto"><span class="long">Pedir presupuesto</span><span class="short">Presupuesto</span></a>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="catalogo">
+    <div class="wrap">
+      <p class="eyebrow">Productos</p>
+      <h1>Nuestras máquinas</h1>
+      <p class="lead">Kiddie rides, carruseles, grúas y juegos de habilidad. Consulta medidas y datos técnicos, descarga la ficha y pide presupuesto sin compromiso.</p>
+      <ul class="hero-stats">
+        <li><b id="statTotal">0</b> máquinas</li>
+        <li><i data-i="ar"></i><b id="stat3d">0</b> en 3D con realidad aumentada</li>
+        <li><i data-i="headset"></i>Atención al cliente 24/7/365</li>
+        <li><i data-i="wrench"></i>Servicio técnico propio en toda España</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="catalog-body">
+  <div class="toolbar">
+    <div class="wrap">
+      <div class="tb-row">
+        <label class="search"><i data-i="search"></i><span class="sr-only">Buscar máquina</span><input id="q" type="search" placeholder="Buscar máquina o código…" autocomplete="off"></label>
+        <button class="chip-btn" id="only3d" type="button" aria-pressed="false"><i data-i="cube"></i>Con 3D</button>
+        <label class="sort"><span class="sr-only">Ordenar</span><select id="sort"><option value="az">A–Z</option><option value="small">Más compactas</option><option value="big">Más grandes</option></select></label>
+      </div>
+      <div class="cats" id="cats" aria-label="Categorías"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="results"><p class="count" id="count" aria-live="polite"></p><div class="active" id="active"></div></div>
+    <div class="grid" id="grid"></div>
+  </div>
+  </div>
+
+  <section class="contact" id="contacto">
+    <div class="wrap contact-in">
+      <div class="contact-copy">
+        <p class="eyebrow">Contacto</p>
+        <h2>Contáctanos</h2>
+        <p>Cuéntanos qué espacio tienes y qué máquinas te interesan. Te enviamos la ficha técnica y un presupuesto a medida.</p>
+        <ul class="checks">
+          <li><i data-i="check"></i>Te ayudamos a elegir según tu espacio</li>
+          <li><i data-i="check"></i>Ficha técnica de cada máquina</li>
+          <li><i data-i="check"></i>Presupuesto sin compromiso</li>
+        </ul>
+      </div>
+      <div>
+        <form class="form" id="form" novalidate>
+          <div class="sel-box"><p class="sel-title">Máquinas de interés</p><div class="sel-chips" id="selChips"></div></div>
+          <input type="hidden" name="maquinas" id="fMaquinas">
+          <div class="two">
+            <div class="field"><i data-i="user"></i><label class="sr-only" for="cNombre">Nombre</label><input id="cNombre" name="nombre" placeholder="Nombre *" autocomplete="name" required><p class="err">Indica tu nombre.</p></div>
+            <div class="field"><i data-i="mail"></i><label class="sr-only" for="cEmail">Correo electrónico</label><input id="cEmail" name="email" type="email" placeholder="Correo electrónico *" autocomplete="email" required><p class="err">Revisa el correo electrónico.</p></div>
+            <div class="field"><i data-i="phone"></i><label class="sr-only" for="cTel">Teléfono</label><input id="cTel" name="telefono" type="tel" placeholder="Teléfono *" autocomplete="tel" required><p class="err">Indica un teléfono de contacto.</p></div>
+            <div class="field"><i data-i="pin"></i><label class="sr-only" for="cCiudad">Provincia / Ciudad</label><input id="cCiudad" name="ciudad" placeholder="Provincia / Ciudad *" autocomplete="address-level2" required><p class="err">Indica tu provincia o ciudad.</p></div>
+          </div>
+          <div class="field"><i data-i="msg"></i><label class="sr-only" for="cMsg">Mensaje</label><textarea id="cMsg" name="mensaje" placeholder="Mensaje * (tipo de local, espacio disponible, plazos…)" required></textarea><p class="err">Escribe un mensaje.</p></div>
+          <label class="consent" id="consentBox"><input type="checkbox" id="cConsent" required><span>He leído y consiento el <a href="#" onclick="return false">Tratamiento de mis Datos Personales</a> conforme a la normativa vigente. *</span></label>
+          <button class="btn primary lg" type="submit">Enviar solicitud</button>
+          <p class="form-note">En WordPress este formulario será el de vuestro plugin de formularios, con los mismos campos.</p>
+        </form>
+        <div class="form-ok" id="formOk" hidden>
+          <i data-i="check"></i>
+          <h3>¡Solicitud enviada!</h3>
+          <p>Gracias. Nuestro equipo comercial revisará tu solicitud y te contactará.</p>
+          <button class="btn soft" type="button" id="formAgain">Enviar otra consulta</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot"><div class="wrap"><span>© Tecnotron</span><span>Medidas en centímetros: ancho × fondo × alto.</span></div></footer>
+
+<div class="tray" id="tray" hidden>
+  <span class="tray-n" id="trayN">0</span>
+  <span class="tray-txt" id="trayTxt"></span>
+  <a class="btn primary sm" href="#contacto" id="trayGo">Pedir presupuesto</a>
+</div>
+
+<dialog class="ficha" id="ficha" aria-labelledby="fName">
+  <div class="f-shell">
+    <div class="f-top">
+      <button class="icon-btn" id="fPrev" type="button" aria-label="Máquina anterior"><i data-i="left"></i></button>
+      <button class="icon-btn" id="fNext" type="button" aria-label="Máquina siguiente"><i data-i="right"></i></button>
+      <span class="f-crumb" id="fCrumb"></span>
+      <button class="icon-btn" id="fClose" type="button" aria-label="Cerrar ficha"><i data-i="x"></i></button>
+    </div>
+    <div class="f-grid">
+      <div class="f-media" id="fMedia">
+        <div class="f-tabs" role="tablist" aria-label="Vista">
+          <button role="tab" id="tab3d" data-view="3d" type="button"><i data-i="cube"></i>3D · AR</button>
+          <button role="tab" id="tabImg" data-view="img" type="button"><i data-i="image"></i>Imagen</button>
+        </div>
+        <div class="f-stage" id="fStage"></div>
+      </div>
+      <div class="f-info">
+        <p class="eyebrow" id="fCat"></p>
+        <h2 id="fName" tabindex="-1" autofocus></h2>
+        <p class="f-code" id="fCode"></p>
+        <div id="fDescBox"><h3 class="f-h">Descripción</h3><div class="desc" id="fDesc"></div></div>
+        <h3 class="f-h">Características</h3>
+        <dl class="specs" id="fSpecs"></dl>
+        <h3 class="f-h">Dimensiones</h3>
+        <figure class="dimfig" id="fSize"></figure>
+        <h3 class="f-h">Descargas</h3>
+        <ul class="downloads" id="fDownloads"></ul>
+      </div>
+    </div>
+    <div class="f-bar">
+      <button class="btn soft" id="fAdd" type="button" aria-pressed="false"><i data-i="plus"></i><span class="lbl">Añadir a mi solicitud</span></button>
+      <button class="icon-btn" id="fShare" type="button" aria-label="Compartir ficha"><i data-i="share"></i></button>
+      <span class="grow"></span>
+      <button class="btn primary" id="fQuote" type="button">Pedir presupuesto</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="print-sheet"></div>
+
+<!--%%ASSETS%%-->
+<script>
+/*%%QR_LIB%%*/
+</script>
+<script>
+'use strict';
+/* =====================================================================
+   DATOS. En WordPress saldrán de cada producto (título, categoría, campos
+   de medidas, imagen destacada, GLB y PDFs). Aquí: catálogo real de medidas
+   del configurador + la ficha de ejemplo «Grúa de tren».
+   ===================================================================== */
+const CATS = {
+  kiddie:    { label: 'Kiddie rides',        one: 'Kiddie ride',          color: '#f59e0b', icon: 'car' },
+  carrusel:  { label: 'Carruseles',          one: 'Carrusel',             color: '#ec4899', icon: 'carousel' },
+  premios:   { label: 'Grúas y premios',     one: 'Grúa / premios',       color: '#22d3ee', icon: 'claw' },
+  habilidad: { label: 'Habilidad y deporte', one: 'Habilidad y deporte',  color: '#84cc16', icon: 'target' },
+  simulador: { label: 'Simuladores y arcade', one: 'Simulador / arcade',  color: '#a78bfa', icon: 'wheel' },
+};
+// [id, nombre, categoría, ancho, largo, alto (cm), extra: descripcion, consumo, alimentacion, conformidad, peso, codigo, glb, fichas]
+const RAW = [
+  ['f1', 'F1', 'simulador', 365, 155, 90],
+  ['typhoon', 'Typhoon', 'simulador', 145, 231, 201],
+  ['grua-peluches', 'Grúa peluches', 'premios', 90, 106, 200],
+  ['block-car', 'Block Car', 'kiddie', 198, 100, 110, { glb: 'embed' }],
+  ['mesa-aire-batman', 'Mesa de aire Batman', 'habilidad', 156, 116, 71],
+  ['peppa-basket', 'Peppa Basket', 'habilidad', 190, 120, 260],
+  ['football-bus', 'Football Bus', 'kiddie', 186, 97, 125],
+  ['firetruck', 'Firetruck', 'kiddie', 162, 103, 107],
+  ['carrousel-jungle-around', 'Carrousel Jungle Around', 'carrusel', 125, 125, 232],
+  ['u-hammer', 'U Hammer', 'habilidad', 112, 112, 152],
+  ['carrusel-pj-masks', 'Carrusel de PJ Masks', 'carrusel', 140, 140, 178],
+  ['peppa-hammer', 'Peppa Hammer', 'habilidad', 77, 72.5, 155.5],
+  ['ball-pop-wall', 'Ball Pop Wall', 'habilidad', 118, 52, 176],
+  ['grua-duck-planet', 'Grúa Duck Planet', 'premios', 60, 60, 225],
+  ['peppa-helicoptero', 'Peppa Helicóptero', 'kiddie', 156, 123, 170],
+  ['pj-quad', 'PJ Quad', 'kiddie', 172, 100, 123],
+  ['lollipop', 'Lollipop', 'premios', 73, 75, 152],
+  ['hello-kitty', 'Hello Kitty', 'kiddie', 62, 43, 112],
+  ['roadster', 'Roadster', 'kiddie', 170, 76, 95],
+  ['music-hit', 'Music Hit', 'habilidad', 48, 71, 102],
+  ['happy-farm-peppa-pig', 'Peppa Pig Happy Farm', 'kiddie', 135, 80, 110],
+  ['captain-sub', 'Captain Sub con monitor', 'kiddie', 136, 64, 178],
+  ['legends-of-spark', 'Arcade Legends of Spark', 'simulador', 208, 185, 221],
+  ['go-go-pony', 'Go Go Pony', 'kiddie', 139, 64, 165],
+  ['formula-1-italresina', 'Fórmula 1 Italresina', 'kiddie', 130, 95, 130],
+  ['cat-car', 'Cat Car', 'kiddie', 152, 82, 86],
+  ['cat-car-monitor', 'Cat Car con monitor', 'kiddie', 153, 82, 86],
+  ['duck-shop-amarilla', 'Duck Shop amarilla', 'premios', 59, 55, 190],
+  ['magic-fun-ball', 'Magic Fun Ball', 'premios', 59, 55, 186],
+  ['tom-jerry-cogan', 'Tom & Jerry Cogan', 'kiddie', 70, 120, 127],
+  ['doble-ride-cars-cogan', 'Doble Ride Cars Cogan', 'kiddie', 110, 168, 190],
+  ['diggy', 'Excavadora Diggy', 'kiddie', 141, 72.5, 156, {
+    descripcion: `Presentamos Diggy, nuestra atracción infantil inspirada en el mundo de la construcción y la exploración.
+
+Diggy son dos juegos en uno:
+• Tiene el clásico movimiento del infantil
+• Además dispensa cápsulas con premios
+
+Presenta un diseño llamativo, colores brillantes y efectos LED interactivos, por lo que capta la atención de los más pequeños, convirtiendo cada viaje en una aventura inolvidable.`,
+    consumo: '0,3 kW', alimentacion: '220/240 V 50 Hz', conformidad: 'CE', peso: 134,
+  }],
+  ['shining-cube', 'Shining Cube', 'habilidad', 120, 157, 99],
+  ['peppa-camper', 'Peppa Camper', 'kiddie', 110, 160, 160],
+  ['peppa-bus', 'Peppa Bus Kiddie Ride', 'kiddie', 180, 92, 140, { glb: 'embed' }],
+  ['rayo-mcqueen', 'Rayo McQueen', 'kiddie', 180, 80, 80],
+  ['papa-noel', 'Papá Noel (Baboo Natale)', 'kiddie', 140, 85, 125, { codigo: 'KQ041' }],
+  ['bluey-family-car', 'Bluey Family Car Kiddie Ride', 'kiddie', 197, 109, 160, { glb: 'embed' }],
+  ['carrusel-nostalgica', 'Carrusel Nostálgica Classic', 'carrusel', 154, 154, 275],
+  ['football-champ', 'Football Champ', 'habilidad', 307, 160, 262],
+  ['batman-vs-joker', 'Batman vs Joker', 'kiddie', 200, 83, 186],
+  ['grua-de-tren', 'Grúa de tren', 'kiddie', 160, 88, 150, {
+    codigo: 'KQ546', peso: 130, alimentacion: '230 V – 110 V',
+    descripcion: '¡El trenecito que transporta una grúa! Un tren cargado de bolas de colores que se elevan con la clásica grúa…',
+    fichas: [{ label: 'Especificaciones técnicas (ITA)', url: '#' }, { label: 'Specifications (ENG)', url: '#' }],
+  }],
+];
+// Iguales para todas las máquinas: en WordPress, una opción global del tema
+const EMPRESA = { atencion: '24/7/365', servicio: 'Propio en toda España' };
+const M = RAW.map(([id, nombre, cat, ancho, largo, alto, extra = {}]) => ({ id, nombre, cat, ancho, largo, alto, fichas: [], ...extra }));
+const byId = id => M.find(m => m.id === id);
+const PROTOTIPO = true;             // permite probar un .glb propio en las máquinas sin modelo
+const MV_CDN = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js';
+
+/* ---------- iconos ---------- */
+const P = {
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  check: '<path d="m5 12.5 4.5 4.5L19 7"/>',
+  cube: '<path d="M12 2.8 20 7.3v9.4l-8 4.5-8-4.5V7.3z"/><path d="m4 7.3 8 4.5 8-4.5M12 11.8v9.4"/>',
+  ar: '<path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><path d="m12 7 4 2.3v4.4L12 16l-4-2.3V9.3z"/>',
+  ruler: '<path d="M3 16.5 16.5 3l4.5 4.5L7.5 21z"/><path d="m7 12.5 2 2M10 9.5l2 2M13 6.5l2 2"/>',
+  download: '<path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/>',
+  share: '<circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="m8.2 10.8 7.6-4M8.2 13.2l7.6 4"/>',
+  left: '<path d="m15 18-6-6 6-6"/>', right: '<path d="m9 18 6-6-6-6"/>',
+  file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  qr: '<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM18 14h2M14 18h2"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/>',
+  phone: '<path d="M5 3h3.5l1.5 4.5-2 1.5a12 12 0 0 0 6 6l1.5-2L20 14.5V18a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/>',
+  pin: '<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  msg: '<path d="M4 5h16v11H9l-5 4z"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  zap: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  plug: '<path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5"/>',
+  shield: '<path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/>',
+  weight: '<path d="M6.5 8h11l2.5 12H4z"/><circle cx="12" cy="5.5" r="2.5"/>',
+  box: '<path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
+  area: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16" stroke-dasharray="2 2.5"/>',
+  headset: '<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/><path d="M19 20a3 3 0 0 1-3 2h-2"/>',
+  wrench: '<path d="M14.7 6.3a4 4 0 0 1 5-1l-3 3 .5 2 2 .5 3-3a4 4 0 0 1-5.3 5.3L9.5 20.5a2.1 2.1 0 0 1-3-3l7.4-7.4a4 4 0 0 1 .8-3.8z"/>',
+  image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/>',
+  car: '<path d="M3 16v-3l2.2-5A2 2 0 0 1 7 7h10a2 2 0 0 1 1.8 1l2.2 5v3z"/><path d="M3 13h18"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/>',
+  carousel: '<path d="M3 9 12 3l9 6z"/><path d="M5 9v10M12 9v10M19 9v10M3 20h18"/><circle cx="8.5" cy="14" r="1.6"/><circle cx="15.5" cy="12.5" r="1.6"/>',
+  claw: '<path d="M4 3h16M12 3v7M8 10h8"/><path d="M9 10l-2.5 5 2.5 2.5M15 10l2.5 5-2.5 2.5"/><path d="M4 21h16"/>',
+  target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
+  wheel: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="m3.6 10.4 6 1.1M20.4 10.4l-6 1.1M12 14.5V21"/>',
+};
+const icon = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[n] || ''}</svg>`;
+const hydrateIcons = root => root.querySelectorAll('i[data-i]').forEach(el => { el.outerHTML = icon(el.dataset.i); });
+
+/* ---------- utilidades ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = n => Number(n).toLocaleString('es-ES', { maximumFractionDigits: 1 });
+const dims = m => `${fmt(m.ancho)} × ${fmt(m.largo)} × ${fmt(m.alto)} cm`;
+const area = m => (m.ancho * m.largo / 10000).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const posterOf = m => (typeof POSTERS !== 'undefined' && POSTERS[m.id]) || m.img || '';
+const has3d = m => !!m.glb;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2400); }
+const store = { get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* sin almacenamiento */ } } };
+function placeholder(m, big = false) { const c = CATS[m.cat]; return `<span class="ph${big ? ' big' : ''}" style="--c:${c.color}">${icon(c.icon)}</span>`; }
+
+/* ---------- estado ---------- */
+const state = { q: '', cat: 'all', only3d: false, sort: 'az', sel: new Set(store.get('tn-solicitud', []).filter(byId)) };
+let visible = [];
+
+function filtered() {
+  const q = norm(state.q.trim());
+  let list = M.filter(m => (state.cat === 'all' || m.cat === state.cat) && (!state.only3d || has3d(m))
+    && (!q || norm(`${m.nombre} ${m.codigo || ''} ${CATS[m.cat].label}`).includes(q)));
+  const sz = m => m.ancho * m.largo;
+  if (state.sort === 'az') list.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+  if (state.sort === 'small') list.sort((a, b) => sz(a) - sz(b));
+  if (state.sort === 'big') list.sort((a, b) => sz(b) - sz(a));
+  // Primero las que tienen 3D cuando se ordena por nombre: son el escaparate
+  if (state.sort === 'az') list.sort((a, b) => has3d(b) - has3d(a));
+  return list;
+}
+
+/* ---------- catálogo ---------- */
+function renderCats() {
+  const counts = M.reduce((acc, m) => (acc[m.cat] = (acc[m.cat] || 0) + 1, acc), {});
+  const chip = (key, label, n, color) => `<button class="chip" type="button" data-cat="${key}" aria-pressed="${state.cat === key}" ${color ? `style="--c:${color}"` : ''}>${color ? '<span class="dot"></span>' : ''}${label} <i>${n}</i></button>`;
+  $('cats').innerHTML = chip('all', 'Todas', M.length) + Object.entries(CATS).map(([k, c]) => chip(k, c.label, counts[k] || 0, c.color)).join('');
+}
+function card(m, i) {
+  const c = CATS[m.cat], img = posterOf(m), on = state.sel.has(m.id);
+  return `<article class="card" style="--c:${c.color}">
+    <button class="card-media" type="button" data-open="${m.id}" aria-label="Ver ficha de ${esc(m.nombre)}">
+      ${img ? `<img src="${img}" alt="${esc(m.nombre)}"${i > 7 ? ' loading="lazy"' : ''} decoding="async">` : placeholder(m)}
+      ${has3d(m) ? `<span class="badges"><span class="badge">${icon('cube')}3D · AR</span></span>` : ''}
+    </button>
+    <div class="card-body">
+      <p class="card-cat">${c.one}</p>
+      <h3 class="card-name">${esc(m.nombre)}</h3>
+      <p class="card-dims">${icon('ruler')}${dims(m)}</p>
+      <div class="card-actions">
+        <button class="pill" type="button" data-open="${m.id}">Ver ficha</button>
+        <button class="add-btn" type="button" data-add="${m.id}" aria-pressed="${on}" aria-label="${on ? 'Quitar de' : 'Añadir a'} mi solicitud: ${esc(m.nombre)}" title="${on ? 'En tu solicitud' : 'Añadir a mi solicitud'}">${icon(on ? 'check' : 'plus')}</button>
+      </div>
+    </div>
+  </article>`;
+}
+function render() {
+  visible = filtered();
+  $('grid').innerHTML = visible.length ? visible.map(card).join('')
+    : `<div class="empty"><b>No hay máquinas con esos filtros</b>Prueba con otra búsqueda o categoría.<br><br><button class="btn soft sm" type="button" data-reset>Ver todas</button></div>`;
+  $('count').innerHTML = visible.length === M.length ? `<b>${M.length}</b> máquinas` : `<b>${visible.length}</b> de ${M.length} máquinas`;
+  const tags = [];
+  if (state.only3d) tags.push(['only3d', 'Con 3D']);
+  if (state.q.trim()) tags.push(['q', `«${state.q.trim()}»`]);
+  $('active').innerHTML = tags.map(([k, t]) => `<span class="tag">${esc(t)}<button type="button" data-clear="${k}" aria-label="Quitar filtro ${esc(t)}">${icon('x')}</button></span>`).join('');
+  document.querySelectorAll('#cats .chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cat === state.cat)));
+  $('only3d').setAttribute('aria-pressed', String(state.only3d));
+}
+
+/* ---------- solicitud de presupuesto ---------- */
+function toggleSel(id, force) {
+  const on = force ?? !state.sel.has(id);
+  on ? state.sel.add(id) : state.sel.delete(id);
+  store.set('tn-solicitud', [...state.sel]);
+  syncSel();
+  return on;
+}
+function syncSel() {
+  const names = [...state.sel].map(id => byId(id)?.nombre).filter(Boolean);
+  $('tray').hidden = !names.length || document.body.classList.contains('at-contact');
+  $('trayN').textContent = names.length;
+  $('trayTxt').innerHTML = `<b>${names.length === 1 ? '1 máquina' : `${names.length} máquinas`}</b> · ${esc(names.join(', '))}`;
+  $('selChips').innerHTML = names.length ? [...state.sel].map(id => `<span class="tag">${esc(byId(id).nombre)}<button type="button" data-unsel="${id}" aria-label="Quitar ${esc(byId(id).nombre)}">${icon('x')}</button></span>`).join('')
+    : '<span class="muted">Ninguna todavía. Añádelas desde el catálogo con el botón +.</span>';
+  $('fMaquinas').value = names.join(', ');
+  document.querySelectorAll('[data-add]').forEach(b => {
+    const on = state.sel.has(b.dataset.add), m = byId(b.dataset.add);
+    b.setAttribute('aria-pressed', String(on));
+    b.setAttribute('aria-label', `${on ? 'Quitar de' : 'Añadir a'} mi solicitud: ${m.nombre}`);
+    b.title = on ? 'En tu solicitud' : 'Añadir a mi solicitud';
+    b.innerHTML = icon(on ? 'check' : 'plus');
+  });
+  if (current) syncFichaAdd();
+}
+
+/* ---------- descripción y características ---------- */
+// Texto de la descripción: párrafos separados por una línea en blanco; las líneas con «•» forman una lista.
+function descHTML(txt) {
+  if (!txt) return '';
+  return txt.trim().split(/\n\s*\n/).map(block => {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+    const head = lines.filter(l => !/^[•*-]\s*/.test(l)), items = lines.filter(l => /^[•*-]\s*/.test(l));
+    return (head.length ? `<p>${esc(head.join(' '))}</p>` : '') + (items.length ? `<ul>${items.map(l => `<li>${esc(l.replace(/^[•*-]\s*/, ''))}</li>`).join('')}</ul>` : '');
+  }).join('');
+}
+// Orden de la ficha técnica; sólo se muestran los datos que tiene cada máquina
+function specRows(m) {
+  return [
+    m.codigo && ['file', 'Código', m.codigo],
+    m.consumo && ['zap', 'Consumo', m.consumo],
+    m.alimentacion && ['plug', 'Alimentación', m.alimentacion],
+    m.conformidad && ['shield', 'Conformidad', m.conformidad],
+    m.peso && ['weight', 'Peso', `${fmt(m.peso)} kg`],
+    ['box', 'Dimensiones', dims(m), 'ancho × largo × alto'],
+    ['area', 'Superficie ocupada', `${m.superficie || area(m)} m²`],
+    ['headset', 'Atención al cliente', EMPRESA.atencion],
+    ['wrench', 'Servicio técnico', EMPRESA.servicio],
+  ].filter(Boolean);
+}
+
+/* ---------- dimensiones: la máquina como volumen en perspectiva, con ancho, largo y alto, junto a una persona ---------- */
+function dimSVG(m, print = false) {
+  const col = CATS[m.cat].color, ink = print ? '#222' : '#e4e4e7', soft = print ? '#666' : '#9a9aa6', line = print ? '#888' : '#6b6b76';
+  const W = m.ancho, L = m.largo, H = m.alto, P = 175, PW = 48;
+  const ang = Math.PI / 6, kd = 0.55;                       // fondo en perspectiva caballera: 30° y 0,55
+  const dxL = L * kd * Math.cos(ang), dyL = L * kd * Math.sin(ang);
+  const VW = 340, VH = 220, padL = 46, padR = 16, padT = 22, padB = 46;
+  const gap = 34;
+  const k = Math.min((VW - padL - padR) / (W + dxL + gap + PW), (VH - padT - padB) / Math.max(H + dyL, P));
+  const w = W * k, h = H * k, dx = dxL * k, dy = dyL * k;
+  const x0 = padL, y0 = VH - padB;                          // esquina delantera inferior izquierda
+  const f = (x, y) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+  const front = `M${f(x0, y0)}H${(x0 + w).toFixed(1)}V${(y0 - h).toFixed(1)}H${x0.toFixed(1)}Z`;
+  const top = `M${f(x0, y0 - h)}L${f(x0 + dx, y0 - h - dy)}H${(x0 + w + dx).toFixed(1)}L${f(x0 + w, y0 - h)}Z`;
+  const side = `M${f(x0 + w, y0)}L${f(x0 + w + dx, y0 - dy)}V${(y0 - h - dy).toFixed(1)}L${f(x0 + w, y0 - h)}Z`;
+  const hidden = `M${f(x0, y0)}L${f(x0 + dx, y0 - dy)}H${(x0 + w + dx).toFixed(1)}M${f(x0 + dx, y0 - dy)}V${(y0 - h - dy).toFixed(1)}`;
+  const t = (x, y, txt, extra = '') => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${ink}" font-size="10.5" font-weight="700" font-family="Montserrat,Poppins,Arial" ${extra}>${txt}</text>`;
+  const cap = (x, y, txt, extra = '') => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${soft}" font-size="8" letter-spacing=".6" font-family="Poppins,Arial" ${extra}>${txt}</text>`;
+  // Cotas: ancho bajo el frente, alto a la izquierda y largo a lo largo de la arista inferior derecha
+  const aY = y0 + 12, hX = x0 - 12, off = 10;
+  const lx1 = x0 + w + off * Math.sin(ang), ly1 = y0 + off * Math.cos(ang);
+  const lx2 = lx1 + dx, ly2 = ly1 - dy, lmx = (lx1 + lx2) / 2 + 8, lmy = (ly1 + ly2) / 2 + 12, deg = -30;
+  const px = x0 + w + dx + gap * k + PW * k / 2, ph = P * k, ptop = y0 - ph, hr = 11 * k;
+  const person = `<g fill="${soft}" fill-opacity=".7"><circle cx="${px.toFixed(1)}" cy="${(ptop + hr).toFixed(1)}" r="${hr.toFixed(1)}"/>
+    <path d="M${f(px - 17 * k, ptop + 2.3 * hr)}h${(34 * k).toFixed(1)}a${f(6 * k, 6 * k)} 0 0 1 ${f(6 * k, 6 * k)}V${(ptop + ph * .55).toFixed(1)}h${(-8 * k).toFixed(1)}V${y0}h${(-12 * k).toFixed(1)}V${(ptop + ph * .6).toFixed(1)}h${(-4 * k).toFixed(1)}V${y0}h${(-12 * k).toFixed(1)}V${(ptop + ph * .55).toFixed(1)}h${(-8 * k).toFixed(1)}V${(ptop + 2.3 * hr + 6 * k).toFixed(1)}a${f(6 * k, 6 * k)} 0 0 1 ${f(6 * k, -6 * k)}z"/></g>`;
+  return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Dimensiones: ${fmt(W)} centímetros de ancho, ${fmt(L)} de largo y ${fmt(H)} de alto, junto a una persona de 1,75 metros">
+    <path d="M8 ${y0}H${VW - 8}" stroke="${line}" stroke-opacity=".6"/>
+    <path d="${hidden}" fill="none" stroke="${col}" stroke-opacity=".35" stroke-dasharray="3 3"/>
+    <path d="${side}" fill="${col}" fill-opacity=".14" stroke="${col}" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="${top}" fill="${col}" fill-opacity=".30" stroke="${col}" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="${front}" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width="1.6" stroke-linejoin="round"/>
+    <g stroke="${line}" fill="none">
+      <path d="M${f(x0, aY)}H${(x0 + w).toFixed(1)}M${f(x0, aY - 4)}v8M${f(x0 + w, aY - 4)}v8"/>
+      <path d="M${f(hX, y0)}V${(y0 - h).toFixed(1)}M${f(hX - 4, y0)}h8M${f(hX - 4, y0 - h)}h8"/>
+      <path d="M${f(lx1, ly1)}L${f(lx2, ly2)}"/>
+    </g>
+    ${t(x0 + w / 2, aY + 14, `${fmt(W)} cm`, 'text-anchor="middle"')}${cap(x0 + w / 2, aY + 24, 'ANCHO', 'text-anchor="middle"')}
+    ${t(hX - 6, y0 - h / 2, `${fmt(H)} cm`, `text-anchor="middle" transform="rotate(-90 ${(hX - 6).toFixed(1)} ${(y0 - h / 2).toFixed(1)})"`)}
+    ${cap(hX - 18, y0 - h / 2, 'ALTO', `text-anchor="middle" transform="rotate(-90 ${(hX - 18).toFixed(1)} ${(y0 - h / 2).toFixed(1)})"`)}
+    ${t(lmx, lmy, `${fmt(L)} cm`, `text-anchor="middle" transform="rotate(${deg} ${lmx.toFixed(1)} ${lmy.toFixed(1)})"`)}
+    ${cap(lmx + 4, lmy + 10, 'LARGO', `text-anchor="middle" transform="rotate(${deg} ${(lmx + 4).toFixed(1)} ${(lmy + 10).toFixed(1)})"`)}
+    ${person}${cap(px, y0 + 14, '1,75 M', 'text-anchor="middle"')}
+  </svg>`;
+}
+
+/* ---------- visor 3D (model-viewer, se carga al abrir la primera ficha con 3D) ---------- */
+let mvReady = null;
+function loadModelViewer() {
+  return mvReady ||= (async () => {
+    const inline = $('mv-lib');
+    if (inline) {
+      const bin = atob(inline.textContent.trim()), u = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+      await import(URL.createObjectURL(new Blob([u], { type: 'text/javascript' })));
+    }
+    else await import(MV_CDN);
+    await customElements.whenDefined('model-viewer');
+  })();
+}
+const glbUrls = {};
+function modelUrl(m) {
+  if (m.glb !== 'embed') return m.glb;
+  if (glbUrls[m.id]) return glbUrls[m.id];
+  const b64 = $('glb-' + m.id)?.textContent.trim(); if (!b64) return '';
+  const bin = atob(b64), u = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  return (glbUrls[m.id] = URL.createObjectURL(new Blob([u], { type: 'model/gltf-binary' })));
+}
+
+/* ---------- ficha ---------- */
+let current = null, view = '3d', pushed = false;
+history.scrollRestoration = 'manual';
+const ficha = $('ficha');
+function openFicha(id, { push = true } = {}) {
+  const m = byId(id); if (!m) return;
+  current = m;
+  if (push && location.hash !== '#maquina/' + id) { history.pushState({ ficha: id }, '', '#maquina/' + id); pushed = true; }
+  else if (!push) history.replaceState(history.state, '', '#maquina/' + id);
+  const c = CATS[m.cat];
+  ficha.style.setProperty('--c', c.color);
+  document.title = `${m.nombre} · Tecnotron`;
+  $('fCrumb').textContent = `Productos · ${c.label}`;
+  $('fCat').textContent = c.one;
+  $('fName').textContent = m.nombre;
+  $('fCode').innerHTML = m.codigo ? `Código de producto: <b>${esc(m.codigo)}</b>` : '';
+  $('fCode').hidden = !m.codigo;
+  $('fDesc').innerHTML = descHTML(m.descripcion);
+  $('fDescBox').hidden = !m.descripcion;
+  $('fSpecs').innerHTML = specRows(m).map(([ico, k, v, sub]) => `<div class="spec">${icon(ico)}<dt>${k}</dt><dd>${esc(v)}${sub ? `<small>${sub}</small>` : ''}</dd></div>`).join('');
+  $('fSize').innerHTML = dimSVG(m);
+  $('fDownloads').innerHTML = m.fichas.map(f => `<li><a class="dl" href="${esc(f.url)}" target="_blank" rel="noopener"><span class="fi">${icon('file')}</span><span><b>${esc(f.label)}</b><small>PDF del fabricante</small></span>${icon('download')}</a></li>`).join('')
+    + `<li><button class="dl" type="button" data-print><span class="fi">${icon('file')}</span><span><b>Ficha técnica · ${esc(m.nombre)}</b><small>PDF con descripción, características y dimensiones</small></span>${icon('download')}</button></li>`;
+  const idx = visible.findIndex(x => x.id === id), list = idx >= 0 ? visible : M;
+  const i = list.findIndex(x => x.id === id);
+  $('fPrev').dataset.go = list[(i - 1 + list.length) % list.length].id;
+  $('fNext').dataset.go = list[(i + 1) % list.length].id;
+  $('tab3d').hidden = !has3d(m) && !PROTOTIPO;
+  syncFichaAdd();
+  setView(has3d(m) ? '3d' : (posterOf(m) || !PROTOTIPO ? 'img' : '3d'));
+  if (!ficha.open) ficha.showModal();
+  ficha.querySelector('.f-info').scrollTop = 0;
+  ficha.querySelector('.f-grid').scrollTop = 0;
+}
+function syncFichaAdd() {
+  const on = state.sel.has(current.id);
+  $('fAdd').setAttribute('aria-pressed', String(on));
+  $('fAdd').innerHTML = `${icon(on ? 'check' : 'plus')}<span class="lbl">${on ? 'En tu solicitud' : 'Añadir a mi solicitud'}</span>`;
+}
+function setView(v) {
+  view = v;
+  $('tab3d').setAttribute('aria-selected', String(v === '3d'));
+  $('tabImg').setAttribute('aria-selected', String(v === 'img'));
+  const m = current, stage = $('fStage');
+  stage.innerHTML = '';
+  if (v === 'img') {
+    const img = posterOf(m);
+    stage.innerHTML = img ? `<img src="${img}" alt="${esc(m.nombre)}">` : placeholder(m, true);
+    return;
+  }
+  if (!has3d(m)) {
+    stage.innerHTML = `<div class="stage-empty">${placeholder(m, true)}<p><b>Modelo 3D en preparación</b><br>Mientras tanto, consulta las dimensiones y la ficha técnica.</p>
+      ${PROTOTIPO ? `<label class="drop" id="drop">${icon('cube')}Prototipo: probar con un .glb<input type="file" accept=".glb,model/gltf-binary"></label>` : ''}</div>`;
+    const drop = $('drop'), zone = stage.firstElementChild; if (!drop) return;
+    const use = file => { if (!file || !/\.glb$/i.test(file.name)) return toast('Elige un archivo .glb'); m.glb = URL.createObjectURL(file); $('stat3d').textContent = M.filter(has3d).length; render(); syncSel(); setView('3d'); toast('Modelo cargado en esta sesión'); };
+    drop.querySelector('input').addEventListener('change', e => use(e.target.files[0]));
+    zone.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+    zone.addEventListener('dragleave', () => drop.classList.remove('over'));
+    zone.addEventListener('drop', e => { e.preventDefault(); use(e.dataTransfer.files[0]); });
+    return;
+  }
+  stage.innerHTML = `<div class="stage-empty" id="mvLoading">${placeholder(m, true)}<p>Cargando modelo 3D…</p></div>`;
+  loadModelViewer().then(() => {
+    if (current !== m || view !== '3d') return;
+    const mv = document.createElement('model-viewer');
+    Object.entries({
+      src: modelUrl(m), alt: `Modelo 3D de ${m.nombre}`, poster: posterOf(m), 'camera-controls': '', 'touch-action': 'pan-y',
+      'auto-rotate': '', 'auto-rotate-delay': '2500', 'rotation-per-second': '14deg', 'interaction-prompt': 'auto',
+      'shadow-intensity': '1', 'shadow-softness': '.8', 'environment-image': 'neutral', exposure: '1.05',
+      'camera-orbit': '-35deg 72deg auto', ar: '', 'ar-modes': 'webxr scene-viewer quick-look', 'ar-scale': 'fixed',
+    }).forEach(([k, v]) => mv.setAttribute(k, v));
+    mv.innerHTML = `<button slot="ar-button" class="ar-btn" type="button">${icon('ar')}Ver en tu local · tamaño real</button>
+      <div slot="progress-bar" class="mv-progress"><i></i></div>`;
+    mv.addEventListener('progress', e => { const bar = mv.querySelector('.mv-progress i'); if (bar) bar.style.width = `${Math.round(e.detail.totalProgress * 100)}%`; if (e.detail.totalProgress >= 1) mv.querySelector('.mv-progress')?.remove(); });
+    // Con ar-scale="fixed" la máquina aparece en el local al tamaño del archivo GLB: se muestra cuál es,
+    // y si coincide con la ficha se indica que está a escala real.
+    mv.addEventListener('load', () => {
+      const d = mv.getDimensions(), cm = [d.x, d.z, d.y].map(v => Math.round(v * 100));
+      const real = [m.ancho, m.largo, m.alto].every((v, i) => Math.abs(cm[i] - v) / v <= 0.08);
+      const tools = document.createElement('div');
+      tools.className = 'stage-tools';
+      tools.innerHTML = `<span class="stage-note">${real ? `${icon('check')}A escala real` : `${icon('ruler')}Tamaño en AR`} · ${cm.join(' × ')} cm</span>`;
+      stage.appendChild(tools);
+      if (!mv.canActivateAR) {
+        const b = document.createElement('button');
+        b.className = 'qr-open'; b.type = 'button';
+        b.innerHTML = `${icon('qr')}Verla en tu local con el móvil`;
+        b.addEventListener('click', () => toggleQR(stage));
+        stage.appendChild(b);
+      }
+    }, { once: true });
+    mv.addEventListener('error', () => { stage.innerHTML = `<div class="stage-empty">${placeholder(m, true)}<p><b>No se pudo cargar el modelo 3D</b></p></div>`; });
+    stage.innerHTML = ''; stage.appendChild(mv);
+  }).catch(err => { console.warn(err); stage.innerHTML = `<div class="stage-empty">${placeholder(m, true)}<p><b>Visor 3D no disponible</b><br>Revisa la conexión.</p></div>`; });
+}
+function toggleQR(stage) {
+  const old = stage.querySelector('.qr-pop'); if (old) return old.remove();
+  const pop = document.createElement('div'); pop.className = 'qr-pop';
+  let svg = '';
+  try { const q = qrcode(0, 'M'); q.addData(location.href); q.make(); svg = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch { /* sin QR */ }
+  pop.innerHTML = `${svg}<p><b>Escanéalo con tu móvil</b> y pulsa «Ver en tu local» para colocar la máquina a tamaño real.</p>${location.protocol === 'file:' ? '<small>En la web publicada el código abrirá esta misma ficha.</small>' : ''}`;
+  stage.appendChild(pop);
+}
+ficha.addEventListener('close', () => {
+  $('fStage').innerHTML = '';                       // libera el contexto WebGL del visor
+  current = null;
+  document.title = 'Nuestras máquinas · Tecnotron';
+  if (location.hash.startsWith('#maquina/')) {
+    if (pushed) history.back();
+    else history.replaceState(null, '', location.pathname + location.search);
+  }
+  pushed = false;
+});
+ficha.addEventListener('click', e => { if (e.target === ficha) ficha.close(); });
+window.addEventListener('popstate', () => {
+  const id = location.hash.startsWith('#maquina/') ? location.hash.slice(9) : null;
+  if (id && byId(id)) { if (!ficha.open) pushed = false; openFicha(id, { push: false }); }
+  else if (ficha.open) { current = null; ficha.close(); }
+});
+
+/* ---------- ficha imprimible («Descargar ficha técnica», Guardar como PDF) ---------- */
+function printFicha(m) {
+  const img = posterOf(m);
+  $('print-sheet').innerHTML = `
+    <div class="ps-head"><span class="ps-brand">TECNOTRON</span><span class="ps-doc">Ficha técnica<br>${new Date().toLocaleDateString('es-ES')}</span></div>
+    <h1 class="ps-title">${esc(m.nombre)}</h1><p class="ps-sub">${esc(CATS[m.cat].one)}${m.codigo ? ` · Código ${esc(m.codigo)}` : ''}</p>
+    <div class="ps-grid">
+      <div class="ps-img">${img ? `<img src="${img}" alt="">` : placeholder(m, true)}</div>
+      <table class="ps-table">${specRows(m).map(([, k, v]) => `<tr><th>${k}</th><td>${esc(v)}</td></tr>`).join('')}</table>
+    </div>
+    ${m.descripcion ? `<div class="ps-desc"><h2>Descripción</h2>${descHTML(m.descripcion)}</div>` : ''}
+    <div class="ps-dim"><h2>Dimensiones</h2>${dimSVG(m, true)}</div>
+    <div class="ps-foot"><span>Tecnotron · tecnotron.es</span><span>Medidas orientativas; confirmar con el equipo comercial.</span></div>`;
+  setTimeout(() => window.print(), 50);
+}
+
+/* ---------- eventos ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('button, a'); if (!t) return;
+  if (t.dataset.open) return openFicha(t.dataset.open);
+  if (t.dataset.add) { const on = toggleSel(t.dataset.add); return toast(on ? 'Añadida a tu solicitud' : 'Quitada de tu solicitud'); }
+  if (t.dataset.unsel) return toggleSel(t.dataset.unsel, false);
+  if (t.dataset.cat) { state.cat = t.dataset.cat; return render(); }
+  if (t.dataset.clear) { const k = t.dataset.clear; if (k === 'only3d') state.only3d = false; if (k === 'q') { state.q = ''; $('q').value = ''; } return render(); }
+  if ('reset' in t.dataset) { Object.assign(state, { q: '', cat: 'all', only3d: false }); $('q').value = ''; return render(); }
+  if ('print' in t.dataset && current) return printFicha(current);
+  if ('closeProto' in t.dataset) return $('proto').remove();
+});
+$('q').addEventListener('input', e => { state.q = e.target.value; render(); });
+$('sort').addEventListener('change', e => { state.sort = e.target.value; render(); });
+$('only3d').addEventListener('click', () => { state.only3d = !state.only3d; render(); });
+$('menuBtn').addEventListener('click', () => { const open = $('nav').classList.toggle('open'); $('menuBtn').setAttribute('aria-expanded', String(open)); });
+$('nav').addEventListener('click', e => { if (e.target.closest('a')) { $('nav').classList.remove('open'); $('menuBtn').setAttribute('aria-expanded', 'false'); } });
+$('fClose').addEventListener('click', () => ficha.close());
+$('fPrev').addEventListener('click', e => openFicha(e.currentTarget.dataset.go, { push: false }));
+$('fNext').addEventListener('click', e => openFicha(e.currentTarget.dataset.go, { push: false }));
+$('tab3d').addEventListener('click', () => view !== '3d' && setView('3d'));
+$('tabImg').addEventListener('click', () => view !== 'img' && setView('img'));
+$('fAdd').addEventListener('click', () => { const on = toggleSel(current.id); toast(on ? 'Añadida a tu solicitud' : 'Quitada de tu solicitud'); });
+$('fShare').addEventListener('click', async () => {
+  const url = location.href, title = `${current.nombre} · Tecnotron`;
+  if (navigator.share) { try { await navigator.share({ title, url }); } catch { /* cancelado */ } return; }
+  try { await navigator.clipboard.writeText(url); toast('Enlace copiado'); } catch { toast(url); }
+});
+$('fQuote').addEventListener('click', () => {
+  toggleSel(current.id, true);
+  ficha.close();
+  setTimeout(() => { document.getElementById('contacto').scrollIntoView({ behavior: 'smooth' }); }, 60);
+});
+document.addEventListener('keydown', e => {
+  if (!ficha.open || e.target.closest('input, textarea, select, model-viewer')) return;
+  if (e.key === 'ArrowLeft') $('fPrev').click();
+  if (e.key === 'ArrowRight') $('fNext').click();
+});
+
+/* ---------- formulario ---------- */
+const form = $('form');
+function validate() {
+  let ok = true;
+  const check = (id, test) => { const el = $(id), good = test(el.value.trim()); el.closest('.field').classList.toggle('invalid', !good); if (!good && ok) el.focus(); ok = ok && good; };
+  check('cNombre', v => v.length > 1);
+  check('cEmail', v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v));
+  check('cTel', v => v.replace(/\D/g, '').length >= 9);
+  check('cCiudad', v => v.length > 1);
+  check('cMsg', v => v.length > 2);
+  const consent = $('cConsent').checked;
+  $('consentBox').classList.toggle('invalid', !consent);
+  return ok && consent;
+}
+form.addEventListener('input', e => e.target.closest('.field')?.classList.remove('invalid'));
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  if (!validate()) return toast('Revisa los campos marcados');
+  form.hidden = true; $('formOk').hidden = false;
+  $('formOk').scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+$('formAgain').addEventListener('click', () => { form.reset(); form.hidden = false; $('formOk').hidden = true; });
+// Sin la barra flotante mientras se ve el formulario: ya muestra la selección
+new IntersectionObserver(([en]) => { document.body.classList.toggle('at-contact', en.isIntersecting); syncSel(); }, { threshold: .15 }).observe($('contacto'));
+
+/* ---------- arranque ---------- */
+hydrateIcons(document);
+$('statTotal').textContent = M.length;
+$('stat3d').textContent = M.filter(has3d).length;
+renderCats(); render(); syncSel();
+if (location.hash.startsWith('#maquina/') && byId(location.hash.slice(9))) openFicha(location.hash.slice(9), { push: false });
+</script>
+</body>
+</html>

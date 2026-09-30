@@ -1,0 +1,51 @@
+<?php
+/**
+ * Plugin Name:       Tecnotron Máquinas
+ * Description:       Catálogo de máquinas con ficha técnica, galería, visor 3D con realidad aumentada, fichas PDF y solicitudes de presupuesto.
+ * Version:           1.0.0
+ * Requires at least: 6.2
+ * Requires PHP:      7.4
+ * Author:            FastCore para Tecnotron
+ * License:           GPL-2.0-or-later
+ * Text Domain:       tecnotron-maquinas
+ *
+ * @package TecnotronMaquinas
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+define( 'TNM_VERSION', '1.0.0' );
+define( 'TNM_FILE', __FILE__ );
+define( 'TNM_DIR', plugin_dir_path( __FILE__ ) );
+define( 'TNM_URL', plugin_dir_url( __FILE__ ) );
+// Versiones de las librerías incluidas en assets/vendor/ (las comprueba scripts/build.mjs).
+define( 'TNM_MV_VERSION', '4.3.1' );
+define( 'TNM_QR_VERSION', '1.5.2' );
+
+require_once TNM_DIR . 'includes/helpers.php';
+require_once TNM_DIR . 'includes/post-types.php';
+require_once TNM_DIR . 'includes/media.php';
+require_once TNM_DIR . 'includes/render.php';
+require_once TNM_DIR . 'includes/frontend.php';
+require_once TNM_DIR . 'includes/solicitudes.php';
+require_once TNM_DIR . 'includes/import-export.php';
+
+if ( is_admin() ) {
+	require_once TNM_DIR . 'includes/admin/meta-boxes.php';
+	require_once TNM_DIR . 'includes/admin/taxonomy-fields.php';
+	require_once TNM_DIR . 'includes/admin/settings.php';
+	require_once TNM_DIR . 'includes/admin/columns.php';
+	require_once TNM_DIR . 'includes/admin/import-page.php';
+}
+
+/**
+ * Activación: registra tipos y URL, crea las categorías de partida y refresca los enlaces permanentes.
+ */
+function tnm_activate() {
+	tnm_register_types();
+	tnm_crear_categorias_iniciales();
+	flush_rewrite_rules();
+}
+register_activation_hook( __FILE__, 'tnm_activate' );
+
+register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
