@@ -68,3 +68,6 @@
 /* máquina sincronizada: se ve, pero no se edita aquí */
 .tnm-sincronizada #titlediv,.tnm-sincronizada #postdivrich,.tnm-sincronizada .tnm-editor-help,.tnm-sincronizada #postimagediv .inside,
 .tnm-sincronizada #tnm_ficha .inside,.tnm-sincronizada #tnm_galeria .inside,.tnm-sincronizada #tnm_modelo .inside>:not(.tnm-glb-preview),.tnm-sincronizada #tnm_fichas .inside,.tnm-sincronizada #tn_categoriadiv .inside,.tnm-sincronizada #pageparentdiv .inside{opacity:.6;pointer-events:none;user-select:none}
+.tnm-vista{margin:12px 0 0}
+.tnm-vista label{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+.tnm-vista .tnm-help{display:block;margin-top:4px}

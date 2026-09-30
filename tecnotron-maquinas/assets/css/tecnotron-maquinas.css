@@ -95,9 +95,11 @@
 .tnm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));gap:18px;padding-bottom:60px}
 .tnm-card{position:relative;display:flex;flex-direction:column;background:var(--tnm-card);border:1px solid var(--tnm-line);border-radius:var(--tnm-r);overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s}
 .tnm-card:hover{border-color:var(--tnm-line2);transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,.4)}
-.tnm-card-media:not(#tnm){position:relative;display:grid;place-items:center;aspect-ratio:4/3;padding:14px;background:radial-gradient(70% 70% at 50% 55%,color-mix(in srgb,var(--c) 22%,transparent),transparent 72%),var(--tnm-bg2);color:var(--c)}
-.tnm-card-media img:not(#tnm){width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 12px 16px rgba(0,0,0,.45));transition:transform .35s}
-.tnm-card:hover .tnm-card-media img:not(#tnm){transform:scale(1.04)}
+.tnm-card-media:not(#tnm){--tnm-pad:14px;position:relative;display:grid;place-items:center;aspect-ratio:4/3;overflow:hidden;padding:var(--tnm-pad);background:radial-gradient(70% 70% at 50% 55%,color-mix(in srgb,var(--c) 22%,transparent),transparent 72%),var(--tnm-bg2);color:var(--c)}
+/* La foto encaja entera en la caja 4:3, sea cual sea su proporción (alta, cuadrada, apaisada). Colocada en absoluto,
+   una foto alta no puede estirar la tarjeta; con .tnm delante gana a la regla general .tnm img {height:auto}. */
+.tnm .tnm-card-media img:not(#tnm){position:absolute;inset:var(--tnm-pad);width:calc(100% - 2 * var(--tnm-pad));height:calc(100% - 2 * var(--tnm-pad));max-width:none;object-fit:contain;filter:drop-shadow(0 12px 16px rgba(0,0,0,.45));transition:transform .35s}
+.tnm .tnm-card:hover .tnm-card-media img:not(#tnm){transform:scale(1.04)}
 .tnm-ph{display:grid;place-items:center;width:44%;aspect-ratio:1;border-radius:50%;background:color-mix(in srgb,var(--c) 12%,transparent);border:1px dashed color-mix(in srgb,var(--c) 45%,transparent);color:var(--c)}
 .tnm-ph .tnm-ic{width:46%;height:46%;stroke-width:1.6}
 .tnm-badges{position:absolute;left:10px;top:10px;display:flex;gap:6px}
@@ -148,8 +150,9 @@
 .tnm-carousel{position:absolute;inset:0}
 .tnm-slides{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-x:contain;outline:0}
 .tnm-slides::-webkit-scrollbar{display:none}
-.tnm-slide{flex:0 0 100%;height:100%;scroll-snap-align:center;display:grid;place-items:center;padding:60px 28px 56px}
-.tnm-slide img:not(#tnm){max-height:100%;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 18px 24px rgba(0,0,0,.5));user-select:none;-webkit-user-drag:none}
+.tnm-slide{--tnm-st:60px;--tnm-sx:28px;--tnm-sb:56px;flex:0 0 100%;height:100%;scroll-snap-align:center;position:relative;overflow:hidden}
+/* Igual en el carrusel: la foto cabe entera en el recuadro, sin desbordarlo ni obligar a desplazarse */
+.tnm .tnm-slide img:not(#tnm){position:absolute;top:var(--tnm-st);left:var(--tnm-sx);width:calc(100% - 2 * var(--tnm-sx));height:calc(100% - var(--tnm-st) - var(--tnm-sb));max-width:none;object-fit:contain;filter:drop-shadow(0 18px 24px rgba(0,0,0,.5));user-select:none;-webkit-user-drag:none}
 .tnm-car-btn:not(#tnm){position:absolute;z-index:3;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.5);backdrop-filter:blur(6px);color:#fff;padding:0;opacity:.85}
 .tnm-car-btn:hover:not(#tnm){opacity:1;background:rgba(0,0,0,.75)}
 .tnm-car-btn:disabled:not(#tnm){opacity:.25;cursor:default}
@@ -299,7 +302,7 @@
   .tnm-sort:not(#tnm){flex:1.25}
   .tnm-sort select:not(#tnm){width:100%;height:40px;padding:0 28px 0 12px;background-position:right 9px center;font-size:.74rem}
   .tnm-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .tnm-card-media:not(#tnm){padding:8px}
+  .tnm-card-media:not(#tnm){--tnm-pad:8px}
   .tnm-card-body{padding:10px 12px 12px}
   .tnm-card-name{font-size:.84rem}
   .tnm-card-dims{font-size:.7rem}
@@ -317,7 +320,7 @@
   .tnm-f-media,.tnm-ficha--pagina .tnm-f-media{height:min(56vh,460px);min-height:0;border-right:0;border-bottom:1px solid var(--tnm-line)}
   .tnm-ficha--pagina .tnm-f-stage{position:relative;height:100%}
   .tnm-f-info{overflow:visible;padding:20px 16px 24px}
-  .tnm-slide{padding:56px 12px 44px}
+  .tnm-slide{--tnm-st:56px;--tnm-sx:12px;--tnm-sb:44px}
   .tnm-car-btn:not(#tnm){display:none}
   .tnm-ar-btn:not(#tnm){height:48px;font-size:.78rem;padding:0 20px}
   .tnm-f-bar{position:sticky;bottom:0;z-index:5;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom))}

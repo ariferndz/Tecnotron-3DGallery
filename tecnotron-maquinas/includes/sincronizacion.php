@@ -369,6 +369,8 @@ function tnm_sync_maquina( $m, $forzar, $conservar, $ids = array() ) {
 		tnm_sync_meta( $id, '_tnm_' . $k, is_numeric( $m[ $src ] ?? null ) ? (float) $m[ $src ] : '', $conservar );
 	}
 	update_post_meta( $id, '_tnm_destacada', empty( $web['featured'] ) ? 0 : 1 );
+	$vistas = array( '3d' => '3d', 'images' => 'imagenes' );
+	update_post_meta( $id, '_tnm_vista', $vistas[ $web['view'] ?? '' ] ?? '' );
 
 	$cat = sanitize_text_field( (string) ( $m['category'] ?? '' ) );
 	if ( '' !== $cat ) {

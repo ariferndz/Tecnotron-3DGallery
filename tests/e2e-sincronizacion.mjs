@@ -171,6 +171,20 @@ try {
   r = await sincronizarAhora();
   comprobar(!!(await deApi('typhoon')), 'al publicarla en Plataformas vuelve a la web', r);
 
+  /* ---------- vista inicial elegida en Plataformas, con la otra si falta la elegida ---------- */
+  const vista = async slug => { const m = await deApi(slug); return (/data-vista="(\w+)"/.exec((await (await fetch(`${BASE}/wp-json/tecnotron/v1/maquinas/${m.id}/ficha`)).json()).html) || [])[1]; };
+  catalogo[0].web = { ...catalogo[0].web, view: 'images' };
+  catalogo[1].web = { ...catalogo[1].web, view: '3d' };
+  Object.assign(catalogo[0], { updated_at: ahora() }); Object.assign(catalogo[1], { updated_at: ahora() });
+  await sincronizarAhora();
+  comprobar((await vista('block-car')) === 'imagenes', 'Plataformas elige la vista inicial de la ficha (Block Car en «Imágenes» aunque tenga 3D)');
+  comprobar((await vista('typhoon')) === 'imagenes', 'si se pide «3D» y no hay modelo, la ficha abre en «Imágenes»');
+
+  catalogo[0].web = { ...catalogo[0].web, view: null };
+  catalogo[1].web = { ...catalogo[1].web, view: null };
+  await sincronizarAhora();
+  comprobar((await vista('block-car')) === '3d', 'sin vista elegida, la de Ajustes (3D · AR)');
+
   /* ---------- Plataformas con ids nuevos (p. ej. su base de datos recreada): se reconocen por la dirección ---------- */
   Object.assign(catalogo[0], { id: 'pla-block-recreada', updated_at: ahora() });
   r = await sincronizarAhora();
