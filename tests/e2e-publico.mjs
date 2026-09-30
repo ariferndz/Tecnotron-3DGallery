@@ -52,7 +52,8 @@ try {
   await d.waitForTimeout(500);
   await shot(d, '2-ficha-imagenes');
   await d.click('[data-tnm-modal] [data-tnm-car="1"]');
-  await d.waitForTimeout(700);
+  // El paso es un desplazamiento suave: en un ordenador lento (CI, con el 3D de la otra pestaña) tarda más de 700 ms
+  await d.waitForFunction(() => /^2\s*\/\s*4$/.test(document.querySelector('[data-tnm-modal] [data-tnm-car-count]')?.textContent.trim() || ''), null, { timeout: 5000 }).catch(() => {});
   const cuenta = (await d.textContent('[data-tnm-modal] [data-tnm-car-count]')).replace(/\s/g, '');
   comprobar(cuenta === '2/4', 'en «Imágenes» el carrusel avanza', cuenta);
   await d.click('[data-tnm-modal] [data-tnm-next]');
