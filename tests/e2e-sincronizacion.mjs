@@ -171,6 +171,12 @@ try {
   r = await sincronizarAhora();
   comprobar(!!(await deApi('typhoon')), 'al publicarla en Plataformas vuelve a la web', r);
 
+  /* ---------- Plataformas con ids nuevos (p. ej. su base de datos recreada): se reconocen por la dirección ---------- */
+  Object.assign(catalogo[0], { id: 'pla-block-recreada', updated_at: ahora() });
+  r = await sincronizarAhora();
+  const blocks = (await api()).filter(x => x.slug.startsWith('block-car'));
+  comprobar(/0 creadas, 1 actualizadas/.test(r) && blocks.length === 1 && blocks[0].slug === 'block-car', 'si cambian los ids de Plataformas no se duplican las fichas', r);
+
   /* ---------- dejarlo como estaba ---------- */
   await p.goto(`${BASE}/wp-admin/edit.php?post_type=tn_maquina&post_status=draft`);
   const fila = p.locator('#the-list tr', { hasText: quitada.name });

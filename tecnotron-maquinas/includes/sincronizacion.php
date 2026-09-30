@@ -252,11 +252,10 @@ function tnm_sync_ejecutar( $forzar ) {
 	$conservar = empty( $estado['primera'] );
 	$resumen   = array( 'creadas' => 0, 'actualizadas' => 0, 'sin_cambios' => 0, 'retiradas' => 0, 'avisos' => array() );
 	$vistas    = array();
-	foreach ( $json['machines'] as $m ) {
-		if ( ! is_array( $m ) || empty( $m['id'] ) || empty( $m['slug'] ) || empty( $m['name'] ) ) {
-			continue;
-		}
-		$r = tnm_sync_maquina( $m, $forzar, $conservar );
+	$maquinas  = array_values( array_filter( $json['machines'], fn( $m ) => is_array( $m ) && ! empty( $m['id'] ) && ! empty( $m['slug'] ) && ! empty( $m['name'] ) ) );
+	$ids       = array_map( fn( $m ) => (string) $m['id'], $maquinas );
+	foreach ( $maquinas as $m ) {
+		$r = tnm_sync_maquina( $m, $forzar, $conservar, $ids );
 		if ( $r['post_id'] ) {
 			$vistas[] = $r['post_id'];
 		}
@@ -281,18 +280,25 @@ function tnm_sync_ejecutar( $forzar ) {
 }
 
 /**
- * Máquina de la web que corresponde a una de Plataformas: la ya enlazada o, la primera vez, la de la misma dirección.
+ * Máquina de la web que corresponde a una de Plataformas: la ya enlazada o, si no, la de la misma dirección.
+ * Por dirección sólo se toma una que no esté enlazada con otra máquina que Plataformas siga teniendo: así, si allí se
+ * recrea la base de datos (ids nuevos) o la web estuvo conectada a otro Plataformas, no se duplican las fichas.
  *
- * @param array $m Máquina de Plataformas.
+ * @param array    $m   Máquina de Plataformas.
+ * @param string[] $ids Ids de todas las máquinas del catálogo recibido.
  * @return WP_Post|null
  */
-function tnm_sync_buscar( $m ) {
+function tnm_sync_buscar( $m, $ids = array() ) {
 	$q = get_posts( array( 'post_type' => TNM_CPT, 'post_status' => 'any', 'posts_per_page' => 1, 'meta_key' => '_tnm_plataformas_id', 'meta_value' => (string) $m['id'] ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
 	if ( $q ) {
 		return $q[0];
 	}
 	$p = get_page_by_path( sanitize_title( $m['slug'] ), OBJECT, TNM_CPT );
-	return $p && 'trash' !== $p->post_status && '' === (string) get_post_meta( $p->ID, '_tnm_plataformas_id', true ) ? $p : null;
+	if ( ! $p || 'trash' === $p->post_status ) {
+		return null;
+	}
+	$enlazada = (string) get_post_meta( $p->ID, '_tnm_plataformas_id', true );
+	return '' === $enlazada || ! in_array( $enlazada, $ids, true ) ? $p : null;
 }
 
 /**
@@ -316,11 +322,12 @@ function tnm_sync_meta( $id, $key, $val, $conservar ) {
  * @param array $m         Máquina de Plataformas (GET /api/catalog).
  * @param bool  $forzar    Rehacerla aunque no haya cambiado.
  * @param bool  $conservar Primera sincronización: no vaciar lo que la web tenga.
+ * @param array $ids       Ids de todas las máquinas del catálogo recibido.
  * @return array{post_id:int,estado:string,avisos:string[]}
  */
-function tnm_sync_maquina( $m, $forzar, $conservar ) {
+function tnm_sync_maquina( $m, $forzar, $conservar, $ids = array() ) {
 	$firma = md5( (string) wp_json_encode( $m ) );
-	$post  = tnm_sync_buscar( $m );
+	$post  = tnm_sync_buscar( $m, $ids );
 	// Sin cambios en Plataformas ni retoques aquí desde la última vez: nada que hacer
 	if ( $post && ! $forzar && get_post_meta( $post->ID, '_tnm_plataformas_firma', true ) === $firma
 		&& get_post_meta( $post->ID, '_tnm_plataformas_modificada', true ) === $post->post_modified_gmt ) {
