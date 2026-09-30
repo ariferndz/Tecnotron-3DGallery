@@ -138,6 +138,9 @@ try {
     await t.waitForSelector('[data-tnm-modal] [data-tnm-ficha]');
     // Abre en 3D: se mide cuando el modelo ya ha cargado (al cargar aparece la nota «A escala real»)
     await t.waitForFunction(() => document.querySelector('[data-tnm-modal] model-viewer')?.loaded && document.querySelector('[data-tnm-modal] .tnm-stage-note'), null, { timeout: 60000 });
+    // La página de detrás, arriba del todo: desplazada, su barra de filtros se queda pegada arriba (sticky) y su sitio
+    // respecto al catálogo depende de lo que mida la cabecera del tema, que no es del plugin
+    await t.evaluate(() => window.scrollTo(0, 0));
     await t.waitForTimeout(800);
   }]]) {
     await preparar();
@@ -184,7 +187,8 @@ try {
   await c.close();
 
   /* ---------- móvil ---------- */
-  const ctx = await navegador.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  const ctx = await navegador.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
+    userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36' });
   const m = vigilar(await ctx.newPage(), 'móvil');
   await m.goto(BASE + '/maquinas/');
   await m.waitForSelector('.tnm-card');
@@ -193,7 +197,15 @@ try {
   comprobar(ancho <= 390, 'en móvil no hay desplazamiento horizontal', `${ancho}px`);
   await m.locator('.tnm-card[data-url$="/bluey-family-car/"] .tnm-pill').tap();
   await m.waitForSelector('[data-tnm-modal] [data-tnm-ficha]');
-  await m.waitForTimeout(800);
+  // En el móvil no hay QR que escanear: el botón abre la realidad aumentada ahí mismo
+  await m.waitForSelector('[data-tnm-modal] .tnm-ar-movil', { timeout: 60000 });
+  comprobar((await m.locator('[data-tnm-modal] .tnm-qr-open:not(.tnm-ar-movil)').count()) === 0 && /Ver en tu local/.test(await m.textContent('[data-tnm-modal] .tnm-ar-movil')), 'en el móvil, «Ver en tu local» abre la AR directamente, sin QR');
+  // Pulsar abre la AR (aquí se sustituye activateAR para no salir de la página) o, si el navegador no puede, lo explica
+  await m.evaluate(() => { window.tnmAR = 0; document.querySelector('[data-tnm-modal] model-viewer').activateAR = () => { window.tnmAR++; }; });
+  await m.locator('[data-tnm-modal] .tnm-ar-movil').tap();
+  await m.waitForFunction(() => window.tnmAR > 0 || document.querySelector('[data-tnm-modal] .tnm-qr-pop'), null, { timeout: 10000 });
+  const ar = await m.evaluate(() => ({ abierta: window.tnmAR > 0, aviso: document.querySelector('[data-tnm-modal] .tnm-qr-pop')?.textContent || '', qr: !!document.querySelector('[data-tnm-modal] .tnm-qr-pop svg') }));
+  comprobar(ar.abierta || (/Chrome \(Android\) o en Safari/.test(ar.aviso) && !ar.qr), 'al pulsarlo se abre la AR o, si el navegador no puede, se explica (nunca un QR)', ar.abierta ? 'AR abierta' : 'aviso');
   await shot(m, '8-movil-ficha');
   await m.goto(BASE + '/maquinas/bluey-family-car/visor/');
   await m.waitForFunction(() => document.querySelector('model-viewer')?.loaded, null, { timeout: 60000 });
