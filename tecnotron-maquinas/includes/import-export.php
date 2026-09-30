@@ -143,8 +143,7 @@ add_action(
 		fputcsv( $fh, tnm_csv_columnas(), ';', '"', '\\' );
 		foreach ( $posts as $p ) {
 			$cat  = tnm_categoria_de( $p->ID );
-			$desc = preg_replace( array( '#<li[^>]*>#i', '#</(p|ul|ol)>#i' ), array( "\n• ", "\n\n" ), $p->post_content );
-			$desc = trim( preg_replace( "/\n{3,}/", "\n\n", html_entity_decode( wp_strip_all_tags( $desc ), ENT_QUOTES, 'UTF-8' ) ) );
+			$desc = tnm_html_a_texto( $p->post_content );
 			fputcsv(
 				$fh,
 				array(

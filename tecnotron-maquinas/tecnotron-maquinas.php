@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Tecnotron Máquinas
  * Description:       Catálogo de máquinas con ficha técnica, galería, visor 3D con realidad aumentada, fichas PDF y solicitudes de presupuesto.
- * Version:           1.3.0
+ * Version:           1.4.0
  * Requires at least: 6.2
  * Requires PHP:      7.4
  * Author:            FastCore para Tecnotron
@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'TNM_VERSION', '1.3.0' );
+define( 'TNM_VERSION', '1.4.0' );
 define( 'TNM_FILE', __FILE__ );
 define( 'TNM_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TNM_URL', plugin_dir_url( __FILE__ ) );
@@ -31,6 +31,7 @@ require_once TNM_DIR . 'includes/render.php';
 require_once TNM_DIR . 'includes/frontend.php';
 require_once TNM_DIR . 'includes/solicitudes.php';
 require_once TNM_DIR . 'includes/import-export.php';
+require_once TNM_DIR . 'includes/sincronizacion.php';
 
 if ( is_admin() ) {
 	require_once TNM_DIR . 'includes/admin/meta-boxes.php';
@@ -38,6 +39,7 @@ if ( is_admin() ) {
 	require_once TNM_DIR . 'includes/admin/settings.php';
 	require_once TNM_DIR . 'includes/admin/columns.php';
 	require_once TNM_DIR . 'includes/admin/import-page.php';
+	require_once TNM_DIR . 'includes/admin/sincronizacion.php';
 }
 
 /**
@@ -50,4 +52,12 @@ function tnm_activate() {
 }
 register_activation_hook( __FILE__, 'tnm_activate' );
 
-register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
+/**
+ * Desactivación: deja de sincronizar con Plataformas y refresca los enlaces permanentes.
+ */
+function tnm_deactivate() {
+	wp_clear_scheduled_hook( 'tnm_sincronizar' );
+	wp_clear_scheduled_hook( 'tnm_sincronizar_ya' );
+	flush_rewrite_rules();
+}
+register_deactivation_hook( __FILE__, 'tnm_deactivate' );

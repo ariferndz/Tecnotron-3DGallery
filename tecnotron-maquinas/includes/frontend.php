@@ -203,6 +203,9 @@ function tnm_maquina_publica( $post ) {
 		'glb'          => $m['glb'],
 		'imagenes'     => array_map( fn( $id ) => wp_get_attachment_image_url( $id, 'large' ), $m['imagenes'] ),
 		'fichas'       => $m['fichas'],
+		'descripcion'  => tnm_html_a_texto( $post->post_content ),
+		'destacada'    => $m['destacada'],
+		'orden'        => (int) $post->menu_order,
 		'url'          => $m['url'],
 		'visor'        => $m['visor'],
 	);

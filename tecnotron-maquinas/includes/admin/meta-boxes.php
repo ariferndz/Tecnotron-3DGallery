@@ -45,6 +45,14 @@ add_action(
 	'edit_form_after_title',
 	function ( $post ) {
 		if ( TNM_CPT === $post->post_type ) {
+			if ( tnm_sincronizada( $post->ID ) ) {
+				$editar = (string) get_post_meta( $post->ID, '_tnm_plataformas_editar', true );
+				echo '<div class="notice notice-info inline tnm-sync-aviso"><p><b>Esta máquina se edita en Plataformas.</b> Textos, características, fotos, PDF y modelo 3D llegan de allí solos; lo que se cambie aquí se sustituye en la siguiente sincronización.</p>';
+				if ( $editar ) {
+					printf( '<p><a class="button button-primary" href="%s" target="_blank" rel="noopener">Editar en Plataformas</a></p>', esc_url( $editar ) );
+				}
+				echo '</div>';
+			}
 			echo '<nav class="tnm-completar" id="tnm-contenido" aria-label="Contenido de la ficha"><b>Contenido de la ficha</b>';
 			foreach ( tnm_estado_ficha( $post ) as $e ) {
 				printf( '<a href="#%s" class="tnm-c %s" data-tnm-ir><span aria-hidden="true">%s</span>%s</a>', esc_attr( $e['caja'] ), $e['ok'] ? 'tnm-c-ok' : 'tnm-c-falta', $e['ok'] ? '✓' : '+', esc_html( $e['texto'] ) );
@@ -261,6 +269,10 @@ add_action(
 			return;
 		}
 		if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+		// La edita Plataformas: lo que llegue de este formulario no se guarda (la sincronización lo sustituiría)
+		if ( tnm_sincronizada( $post_id ) ) {
 			return;
 		}
 		$in = isset( $_POST['tnm'] ) && is_array( $_POST['tnm'] ) ? wp_unslash( $_POST['tnm'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- se sanea campo a campo.

@@ -77,6 +77,28 @@ function tnm_num( $v ) {
 }
 
 /**
+ * Descripción en HTML → texto plano con párrafos separados por una línea en blanco y listas con «•»
+ * (el formato del CSV y de Plataformas; tnm_texto_a_html() hace el camino de vuelta).
+ *
+ * @param string $html Contenido de la máquina.
+ * @return string
+ */
+function tnm_html_a_texto( $html ) {
+	$t = preg_replace( array( '#<li[^>]*>#i', '#</(p|ul|ol)>#i', '#<br\s*/?>\s*#i' ), array( "\n• ", "\n\n", "\n" ), (string) $html );
+	$t     = html_entity_decode( wp_strip_all_tags( $t ), ENT_QUOTES, 'UTF-8' );
+	$lines = array_map( 'trim', explode( "\n", str_replace( "\r", '', $t ) ) );
+	$out   = array();
+	foreach ( $lines as $i => $l ) {
+		// Una línea en blanco entre dos puntos de la misma lista no separa párrafos
+		if ( '' === $l && ( '' === end( $out ) || ( 0 === strpos( (string) end( $out ), '•' ) && 0 === strpos( (string) ( $lines[ $i + 1 ] ?? '' ), '•' ) ) ) ) {
+			continue;
+		}
+		$out[] = $l;
+	}
+	return trim( implode( "\n", $out ) );
+}
+
+/**
  * Número en formato español: 72,5 · 1.250 · 1,02.
  *
  * @param float $n        Número.

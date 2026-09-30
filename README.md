@@ -126,8 +126,10 @@ El catálogo de demostración ([tests/datos-demo.php](tests/datos-demo.php)) imp
 
 ```bash
 npx playwright install chromium    # la primera vez
-npm test                           # o npm run test:publico / npm run test:admin
+npm test                           # o npm run test:publico / test:admin / test:sincronizacion
 ```
+
+La prueba de sincronización ([tests/e2e-sincronizacion.mjs](tests/e2e-sincronizacion.mjs)) levanta un Plataformas de mentira en el puerto 8099 que WordPress alcanza, desde Docker, en `http://host.docker.internal:8099`: conecta la web en Ajustes (con una clave equivocada y con la buena), comprueba lo que llega (textos, 4 fotos, GLB y PDF, cada fichero descargado una sola vez), el bloqueo de la edición, el aviso firmado, la retirada de una máquina y la desconexión. Al terminar deja el catálogo como estaba.
 
 | Web pública ([tests/e2e-publico.mjs](tests/e2e-publico.mjs)) | Escritorio ([tests/e2e-admin.mjs](tests/e2e-admin.mjs)) |
 | --- | --- |
@@ -168,6 +170,7 @@ npm run prototipo    # → prototipo/catalogo-maquinas.html (≈ 6,5 MB, incluye
 - Direcciones: `/maquinas/`, `/maquinas/categoria/<categoría>/`, `/maquinas/<máquina>/` y `/maquinas/<máquina>/visor/` (destino del QR).
 - Shortcode `[tecnotron_catalogo]` y `[tecnotron_catalogo categoria="kiddie-rides"]`.
 - API pública de sólo lectura: `/wp-json/tecnotron/v1/maquinas`.
+- Sincronización con Plataformas ([includes/sincronizacion.php](tecnotron-maquinas/includes/sincronizacion.php)): las fichas se escriben en plataformas.app.tecnotron.es y la web las copia cada 15 minutos y al recibir un aviso firmado (HMAC-SHA256). Ver [la guía](docs/guia.md#sincronización-con-plataformas).
 - Plantillas sustituibles desde el tema (`<tema>/tecnotron-maquinas/catalogo.php`, `maquina.php`, `visor.php`) y colores con variables CSS `--tnm-*`.
 - Filtro `tnm_solicitudes_por_hora` para cambiar el límite antispam del formulario (5 por hora e IP).
 - A prueba de temas: las reglas CSS de botones, campos, listas e imágenes llevan `:not(#tnm)`, que les da la fuerza de un id sin cambiar a qué se aplican. Así el tema no las pisa. Si añades una regla para uno de esos elementos, pónselo también; `npm test` lo comprueba con [tests/tema-agresivo.css](tests/tema-agresivo.css).

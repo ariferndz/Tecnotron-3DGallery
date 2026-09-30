@@ -24,6 +24,8 @@ Desde el catálogo, la ficha se abre en una ventana sin salir de la página, per
 
 El configurador solo entrega GLB al plugin; todo lo público (catálogo, ficha, visor y solicitudes) sale de WordPress.
 
+> **Desde la versión 1.4 las fichas se escriben en Plataformas.** Con la [sincronización](#sincronización-con-plataformas) conectada, descripción, características, fotos, PDF y modelo 3D de cada máquina se editan en plataformas.app.tecnotron.es y WordPress los copia solo. WordPress sigue sirviendo todo lo público.
+
 ## El QR y el visor 3D
 
 El QR solo contiene una dirección: la del visor de esa máquina en la propia web, por ejemplo tecnotron.es/maquinas/diggy/visor/. No apunta al configurador ni necesita usuario ni contraseña.
@@ -230,6 +232,31 @@ El visitante junta las máquinas que le interesan con el botón + y envía una s
 
 **Colores y tipografía.** El catálogo usa la tipografía del tema y un diseño oscuro como el de la web actual. Los colores se cambian sin tocar el plugin, con variables en **Apariencia → Personalizar → CSS adicional**; por ejemplo, `.tnm{--tnm-accent:#8b5cf6}` cambia el morado de los botones. Los estilos del tema para botones, campos, listas e imágenes no afectan al catálogo; para cambiar uno de esos elementos desde el CSS adicional, añade `:not(#tnm)` al selector (p. ej. `.tnm-chip:not(#tnm){font-size:14px}`).
 
+## Sincronización con Plataformas
+
+Plataformas (plataformas.app.tecnotron.es) es la única fuente de las fichas: cualquier administrador de Plataformas escribe allí la descripción, las características, las fotos para la web, los PDF y el modelo 3D de cada máquina, y esta web los copia sola. Así no hay dos sitios que mantener iguales.
+
+**Conectarla** (una sola vez):
+
+1. En Plataformas, importar lo que ya hay en la web: **Usuarios → Catálogo de tecnotron.es → Importar lo que ya hay en la web**. Trae las descripciones, fotos, PDF y modelos de aquí a las máquinas de Plataformas que aún no los tengan.
+2. En el servidor de Plataformas (Coolify), tres variables: `CATALOG_API_KEYS` (una clave larga, p. ej. `openssl rand -hex 32`), `WEB_WEBHOOK_SECRET` (otro secreto) y `WEB_WEBHOOK_URL` = `https://www.tecnotron.es/wp-json/tecnotron/v1/sincronizar`.
+3. Aquí, **Máquinas → Ajustes → Sincronización con Plataformas**: la dirección de Plataformas, la clave y el secreto. Guardar y pulsar **Sincronizar ahora**.
+
+También se pueden poner en `wp-config.php`, fuera de la base de datos: `define( 'TNM_PLATAFORMAS_URL', '…' ); define( 'TNM_PLATAFORMAS_CLAVE', '…' ); define( 'TNM_PLATAFORMAS_SECRETO', '…' );`
+
+**Cómo funciona:**
+
+- La web lee el catálogo de Plataformas **cada 15 minutos** y, además, en cuanto Plataformas avisa de un cambio (aviso firmado: sin el secreto correcto se rechaza). Un cambio guardado en Plataformas se ve en la web en unos segundos.
+- Cada máquina se empareja por su identificador de Plataformas y, la primera vez, por su dirección (`/maquinas/block-car/`). Las nuevas se crean; las que se despublican o desaparecen en Plataformas pasan a **borrador** (nunca se borran).
+- Fotos, PDF y GLB se copian a la **biblioteca de medios** una sola vez: si no cambian, no se vuelven a descargar.
+- El modelo 3D que llega es el que Plataformas prepara para la web: girado, a la medida de la ficha, en metros y con las gráficas corregidas.
+- La **primera** sincronización no vacía nada que la web tenga y Plataformas todavía no; a partir de ahí, la web es un espejo exacto.
+- Las máquinas que solo existen en la web (no están en Plataformas) no se tocan.
+
+**Mientras está conectada**, el listado avisa de que el catálogo se edita en Plataformas, cada máquina sincronizada tiene el enlace **Editar en Plataformas** y sus cajas se ven, pero no se pueden cambiar. Si alguien cambia algo aquí igualmente (el título, por ejemplo), vuelve a lo de Plataformas en la siguiente lectura. Ajustes muestra la última sincronización, sus números (creadas, actualizadas, sin cambios, retiradas) y los avisos, por ejemplo una foto que no se pudo descargar (se reintenta sola).
+
+**Desconectarla:** en Ajustes, «Olvidar la conexión». Las máquinas se quedan con los últimos datos recibidos y vuelven a editarse aquí.
+
 ## Importar y exportar en CSV
 
 Para muchas máquinas a la vez se trabaja con una hoja de cálculo: **Máquinas → Importar / exportar**.
@@ -264,6 +291,7 @@ El plugin no depende de otros plugins (ni ACF ni constructores) y no carga nada 
 | includes/solicitudes.php | Formulario: validación, antispam, correo y copia en el panel |
 | includes/import-export.php | CSV de entrada y salida |
 | includes/media.php | Permite subir .glb comprobando que el archivo es glTF |
+| includes/sincronizacion.php | Sincronización con Plataformas: lectura del catálogo, tareas programadas, aviso firmado y copia de ficheros |
 | includes/admin/\*.php | Cajas de la ficha, campos de categoría, ajustes, columnas e importador |
 | templates/catalogo.php, maquina.php, visor.php | Plantillas; se sustituyen copiándolas a ‹tema›/tecnotron-maquinas/ |
 | assets/js/tecnotron-maquinas.js | Filtros, ventana de ficha, carrusel, 3D/AR, QR, ficha impresa y formulario, sin jQuery |
@@ -272,12 +300,13 @@ El plugin no depende de otros plugins (ni ACF ni constructores) y no carga nada 
 | assets/vendor/ | model-viewer 4.3.1 (Apache-2.0), qrcode-generator 1.5.2 (MIT), ficha-pdf.js (ficha técnica en PDF con pdf-lib 1.17, MIT, generado desde src/ficha-pdf.js) y obj-a-glb.js (conversor OBJ → GLB con three.js 0.183, MIT, generado desde src/obj-a-glb.js); se actualizan con npm y `npm run build` |
 | data/maquinas-configurador.csv | Catálogo inicial |
 
-**Datos de cada máquina** (metadatos de la entrada): \_tnm\_codigo, \_tnm\_consumo, \_tnm\_alimentacion, \_tnm\_conformidad, \_tnm\_peso, \_tnm\_ancho, \_tnm\_largo, \_tnm\_alto (cm), \_tnm\_superficie (m², opcional), \_tnm\_destacada, \_tnm\_galeria (IDs de adjunto), \_tnm\_glb\_id o \_tnm\_glb\_url y \_tnm\_fichas. La descripción es el contenido de la entrada; el orden, menu\_order. Las categorías guardan tnm\_singular, tnm\_color, tnm\_icono y tnm\_orden.
+**Datos de cada máquina** (metadatos de la entrada): \_tnm\_codigo, \_tnm\_consumo, \_tnm\_alimentacion, \_tnm\_conformidad, \_tnm\_peso, \_tnm\_ancho, \_tnm\_largo, \_tnm\_alto (cm), \_tnm\_superficie (m², opcional), \_tnm\_destacada, \_tnm\_galeria (IDs de adjunto), \_tnm\_glb\_id o \_tnm\_glb\_url y \_tnm\_fichas; las sincronizadas, además, \_tnm\_plataformas\_id, \_tnm\_plataformas\_editar, \_tnm\_plataformas\_firma y \_tnm\_plataformas\_modificada (y cada fichero copiado, \_tnm\_origen con su dirección en Plataformas). La descripción es el contenido de la entrada; el orden, menu\_order. Las categorías guardan tnm\_singular, tnm\_color, tnm\_icono y tnm\_orden.
 
 **API pública** (solo lectura, máquinas publicadas):
 
 - GET /wp-json/tecnotron/v1/maquinas — todas, con medidas, GLB, imágenes, PDF, ficha y visor. Sirve para el configurador, un visor en otro dominio u otras webs.
 - GET /wp-json/tecnotron/v1/maquinas/{id}/ficha — el HTML de la ficha que usa la ventana del catálogo.
+- POST /wp-json/tecnotron/v1/sincronizar — aviso de Plataformas (cabecera `X-Plataformas-Signature: sha256=<HMAC del cuerpo>`); responde 202 y sincroniza en segundo plano.
 
 **Dirección de cada ficha.** La ventana del catálogo cambia la dirección a la de la máquina sin recargar. Esa misma dirección, abierta directamente, la genera el servidor completa, para Google y para compartir. El visor lleva noindex para no duplicar la ficha en Google.
 
@@ -293,4 +322,5 @@ El plugin no depende de otros plugins (ni ACF ni constructores) y no carga nada 
 - [ ] Configurar el correo de solicitudes y, si hace falta, un plugin SMTP; enviar una solicitud de prueba.
 - [ ] Probar «Ver en tu local» en un Android y en un iPhone desde la web publicada.
 - [ ] Enlazar «Productos» del menú a /maquinas/ y redirigir las fichas antiguas a las nuevas (plugin Redirection) para no perder posicionamiento.
-- [ ] Configurador: añadir «Exportar GLB para la web», que guarde el modelo ya ajustado a ancho, largo y alto, optimizado y listo para subir.
+- [x] Configurador: «Preparar para la web» guarda el modelo ya ajustado a ancho, largo y alto, en metros y con las gráficas (Plataformas).
+- [ ] Conectar la [sincronización con Plataformas](#sincronización-con-plataformas) tras importar allí lo que ya hay en la web.

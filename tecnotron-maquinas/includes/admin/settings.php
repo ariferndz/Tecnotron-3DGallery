@@ -69,6 +69,7 @@ function tnm_settings_page() {
 				<tr><th><label for="tnm-slug">Dirección</label></th><td><code><?php echo esc_html( home_url( '/' ) ); ?></code><input id="tnm-slug" name="<?php echo esc_attr( $n ); ?>[slug]" value="<?php echo esc_attr( $o['slug'] ); ?>" style="width:140px"><code>/</code><p class="description">Cambiarla rompe los QR ya impresos: elige la definitiva antes de imprimir.</p></td></tr>
 				<tr><th>Vista inicial de la ficha</th><td><select name="<?php echo esc_attr( $n ); ?>[vista_ficha]"><option value="3d" <?php selected( $o['vista_ficha'], '3d' ); ?>>3D · AR (si la máquina tiene modelo)</option><option value="imagenes" <?php selected( $o['vista_ficha'], 'imagenes' ); ?>>Imágenes</option></select><p class="description">Sin modelo 3D, la ficha muestra sólo «Imágenes».</p></td></tr>
 			</table>
+			<?php tnm_sync_ajustes_campos(); ?>
 			<h2>Datos comunes a todas las fichas</h2>
 			<table class="form-table" role="presentation">
 				<tr><th><label for="tnm-comunes">Una línea por dato</label></th><td><textarea id="tnm-comunes" class="large-text code" rows="4" name="<?php echo esc_attr( $n ); ?>[comunes]"><?php echo esc_textarea( $o['comunes'] ); ?></textarea><p class="description">Formato <code>Etiqueta: valor</code>. Aparecen al final de «Características» en todas las máquinas y en la cabecera del catálogo.</p></td></tr>
