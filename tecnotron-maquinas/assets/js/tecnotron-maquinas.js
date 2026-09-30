@@ -211,6 +211,11 @@
 
   /* ---------- visor 3D y realidad aumentada ---------- */
   let mvReady = null;
+  // Móvil o tableta: la realidad aumentada se abre aquí mismo; el QR sólo tiene sentido en el ordenador.
+  // No basta con mv.canActivateAR al cargar el modelo: model-viewer lo averigua después, y en el móvil
+  // a veces aún decía «no» y se enseñaba el QR.
+  const esMovil = () => /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+    || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));   // iPad con iPadOS
   const loadModelViewer = () => (mvReady ||= import(T.mv).then(() => customElements.whenDefined('model-viewer')));
   function mount3D(art) {
     const stage = art.querySelector('[data-tnm-view="3d"]');
@@ -226,7 +231,9 @@
         'camera-orbit': '-35deg 72deg auto', ar: '', 'ar-modes': 'webxr scene-viewer quick-look', 'ar-scale': 'fixed',
       };
       Object.entries(attrs).forEach(([k, v]) => mv.setAttribute(k, v));
-      mv.innerHTML = `<button slot="ar-button" class="tnm-ar-btn" type="button">${icon('ar')}Ver en tu local · tamaño real</button><div slot="progress-bar" class="tnm-mv-progress"><i></i></div>`;
+      // En el móvil el botón de AR es el nuestro (siempre visible); el de model-viewer se deja vacío para no duplicarlo
+      mv.innerHTML = (esMovil() ? '<span slot="ar-button" hidden></span>' : `<button slot="ar-button" class="tnm-ar-btn" type="button">${icon('ar')}Ver en tu local · tamaño real</button>`)
+        + '<div slot="progress-bar" class="tnm-mv-progress"><i></i></div>';
       mv.addEventListener('progress', e => {
         const bar = mv.querySelector('.tnm-mv-progress i');
         if (bar) bar.style.width = `${Math.round(e.detail.totalProgress * 100)}%`;
@@ -242,7 +249,13 @@
         note.className = 'tnm-stage-note';
         note.innerHTML = `${icon(real ? 'check' : 'ruler')}${real ? 'A escala real' : 'Tamaño en AR'} · ${cm.map(fmt).join(' × ')} cm`;
         stage.appendChild(note);
-        if (!mv.canActivateAR) {
+        if (esMovil()) {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'tnm-qr-open tnm-ar-movil';
+          b.innerHTML = `${icon('ar')}Ver en tu local · tamaño real`;
+          b.addEventListener('click', () => abrirAR(mv, stage));
+          stage.appendChild(b);
+        } else if (!mv.canActivateAR) {
           const b = document.createElement('button');
           b.type = 'button'; b.className = 'tnm-qr-open';
           b.innerHTML = `${icon('qr')}Verla en tu local con el móvil`;
@@ -254,6 +267,16 @@
       stage.innerHTML = ''; stage.appendChild(mv);
     }).catch(() => { stage.innerHTML = `<div class="tnm-stage-empty"><span class="tnm-ph">${icon('cube')}</span><p><b>Visor 3D no disponible</b></p></div>`; })
       .finally(() => { stage._loading = false; });
+  }
+
+  /** Abre la cámara con la máquina a tamaño real. Espera un momento a que model-viewer sepa si puede. */
+  async function abrirAR(mv, stage) {
+    for (let i = 0; i < 30 && !mv.canActivateAR; i++) await new Promise(r => setTimeout(r, 100));
+    if (mv.canActivateAR) return mv.activateAR();
+    const old = stage.querySelector('.tnm-qr-pop'); if (old) return old.remove();
+    const pop = document.createElement('div'); pop.className = 'tnm-qr-pop';
+    pop.innerHTML = '<p><b>Este navegador no abre la realidad aumentada.</b> Abre esta página en Chrome (Android) o en Safari (iPhone) y pulsa de nuevo «Ver en tu local».</p>';
+    stage.appendChild(pop);
   }
 
   let qrReady = null;
