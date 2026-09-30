@@ -55,7 +55,7 @@ El plugin se instala en unos cinco minutos desde el panel de WordPress; no hace 
 5. Abrir **tecnotron.es/maquinas/**. Si diera error 404, ir a **Ajustes → Enlaces permanentes** y pulsar **Guardar** sin cambiar nada.
 6. **Menú del sitio**: enlazar «Productos» a /maquinas/, o poner el shortcode `[tecnotron_catalogo]` en la página de productos actual. Con `[tecnotron_catalogo categoria="kiddie-rides"]` se muestra una sola categoría.
 
-**Requisitos:** WordPress 6.2 o superior y PHP 7.4 o superior. Funciona con temas clásicos (incluidos los de Elementor) y con temas de bloques: el catálogo y las fichas usan la cabecera y el pie del tema. Los botones, el buscador, los campos y las listas del catálogo no heredan los estilos del tema, así que se ven igual en cualquier web. Si hay un plugin de SEO (Yoast, Rank Math, All in One SEO), este se encarga de la descripción y Open Graph de cada ficha.
+**Requisitos:** WordPress 6.2 o superior y PHP 7.4 o superior. Funciona con temas clásicos (incluidos los de Elementor) y con temas de bloques: el catálogo y las fichas usan la cabecera y el pie del tema. Los botones, el buscador, los campos y las listas del catálogo no heredan los estilos del tema, así que se ven igual en cualquier web. Si el tema tiene cabecera fija (como Impreza en tecnotron.es), el catálogo y las fichas empiezan debajo de ella y la barra de filtros se queda justo debajo al bajar. Si hay un plugin de SEO (Yoast, Rank Math, All in One SEO), este se encarga de la descripción y Open Graph de cada ficha.
 
 **Probado** en WordPress 6.4 con PHP 8.4 (tema clásico y Twenty Twenty-Four) y en WordPress 6.8 con PHP 8.3 en modo depuración (Twenty Twenty-Five), en escritorio y móvil: catálogo, filtros, ficha, carrusel, 3D, QR, ficha impresa, formulario, importación y exportación, conversión de OBJ, y el catálogo con los estilos de un tema agresivo (tipo Hello Elementor). Las mismas pruebas se pueden repetir con `npm test` (ver README).
 
@@ -225,7 +225,7 @@ El visitante junta las máquinas que le interesan con el botón + y envía una s
 | Título y texto del bloque de contacto | «Contáctanos» y un texto breve | Encima del formulario |
 | Usar otro formulario | Vacío | Shortcode de vuestro formulario actual |
 | Ficha PDF: color | Morado | Franjas, banda del título y círculos de las características |
-| Ficha PDF: logo | El del tema o el nombre del sitio | PNG o SVG, mejor con fondo transparente; va sobre una placa blanca |
+| Ficha PDF: logo | https://www.tecnotron.es/img/logo.png | Se elige en Medios o se pega su dirección. Mejor la versión oscura: va sobre una placa blanca (un logo blanco va sin placa). Sin logo, el del tema o el nombre del sitio |
 | Ficha PDF: teléfono, correo, web y dirección | Web del sitio | Pie de la portada; los vacíos no salen |
 
 **Colores y tipografía.** El catálogo usa la tipografía del tema y un diseño oscuro como el de la web actual. Los colores se cambian sin tocar el plugin, con variables en **Apariencia → Personalizar → CSS adicional**; por ejemplo, `.tnm{--tnm-accent:#8b5cf6}` cambia el morado de los botones. Los estilos del tema para botones, campos, listas e imágenes no afectan al catálogo; para cambiar uno de esos elementos desde el CSS adicional, añade `:not(#tnm)` al selector (p. ej. `.tnm-chip:not(#tnm){font-size:14px}`).

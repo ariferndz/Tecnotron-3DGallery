@@ -34,6 +34,7 @@
 .tnm-st{display:inline-block;padding:1px 8px;border-radius:10px;background:#f0f0f1}
 .tnm-st-creada{background:#edfaef;color:#1e4620}.tnm-st-actualizada{background:#e7f0fb;color:#0a3d7a}.tnm-st-error{background:#fcf0f1;color:#8a2424}
 .tnm-import-result{max-width:900px;margin:12px 0 24px}
+.tnm-logo-prev img{display:block;max-width:320px;max-height:70px;width:auto;height:auto;margin:6px 0;padding:8px;background:#fff;border:1px solid #dcdcde;border-radius:6px}
 /* panel «Contenido de la ficha» */
 .tnm-completar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 4px;padding:12px 14px;border:1px solid #c3c4c7;border-left:4px solid #8b5cf6;border-radius:4px;background:#fff}
 .tnm-completar>b{margin-right:6px}

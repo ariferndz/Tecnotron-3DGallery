@@ -138,7 +138,7 @@ npm test                           # o npm run test:publico / npm run test:admin
 | Modelo 3D a escala real y QR del visor | Guardar consumo, peso y PDF; la API lo refleja |
 | Solicitud: bandeja, validación de los 5 campos y envío | 5 categorías, ajustes |
 | Página de máquina: 8 datos, JSON-LD, preselección, ficha impresa | Exportar CSV y reimportarlo (42 actualizadas, 0 errores) |
-| Sin 3D sólo la pestaña «Imágenes»; icono de «Descargas» sin estirar; la ficha técnica se descarga como PDF de 2 páginas | Ajustes: vista «3D · AR» por defecto, logo y contacto del PDF |
+| Sin 3D sólo la pestaña «Imágenes»; icono de «Descargas» sin estirar; la ficha técnica se descarga como PDF de 2 páginas; con una cabecera fija o superpuesta del tema (`?cabecera=fija|absoluta`, simulada en dev/mu-plugins) nada queda tapado | Ajustes: vista «3D · AR» por defecto, logo y contacto del PDF |
 | PDF, página de categoría, API | Solicitudes y filtro «Modelos 3D» de Medios |
 | Móvil: sin desplazamiento lateral, ficha y visor del QR | Sin errores de JavaScript ni HTTP |
 

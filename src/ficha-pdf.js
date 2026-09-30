@@ -43,7 +43,7 @@ export async function fichaPDF(d) {
     incrustar(doc, d.imagenes[0]),
     incrustar(doc, d.imagenes[1], { circulo: true }),
     incrustar(doc, d.imagenes[2] || d.imagenes[1] || d.imagenes[0]),
-    incrustar(doc, d.empresa.logo, { max: 800 }),
+    incrustar(doc, d.empresa.logo, { max: 900, logo: true }),
   ]);
   const iconos = {};
   for (const [nombre, svg] of Object.entries({ ...d.iconos, ...Object.fromEntries(d.specs.map((s, i) => [`spec${i}`, s.icono])) })) {
@@ -473,6 +473,11 @@ function hexARgb(hex) {
 
 /* ---------------------------------------------------------------- imágenes */
 
+function rectRedondeado(x, y, w, h, r) {
+  const f = v => v.toFixed(2);
+  return `M${f(x + r)} ${f(y)} H${f(x + w - r)} A${r} ${r} 0 0 1 ${f(x + w)} ${f(y + r)} V${f(y + h - r)} A${r} ${r} 0 0 1 ${f(x + w - r)} ${f(y + h)} H${f(x + r)} A${r} ${r} 0 0 1 ${f(x)} ${f(y + h - r)} V${f(y + r)} A${r} ${r} 0 0 1 ${f(x + r)} ${f(y)} Z`;
+}
+
 /** Rectángulo donde cabe la imagen entera dentro de la caja. */
 function encajar(img, caja, alinear) {
   const e = Math.min(caja.w / img.width, caja.h / img.height);
@@ -488,8 +493,8 @@ function ponerLogo(ctx, p, { x, y, alto, maxAncho, derecha = false }, logo) {
     const w = logo.width * e;
     const h = logo.height * e;
     const px = derecha ? x - w : x;
-    // Placa blanca: el logo se ve bien sea del color que sea
-    p.drawRectangle({ x: px - 10, y: H - y - h - 8, width: w + 20, height: h + 16, color: BLANCO, opacity: 0.96 });
+    // Placa blanca de esquinas redondeadas para logos oscuros o de color; un logo blanco va directo sobre la franja
+    if (!logo.tnmClaro) camino(p, rectRedondeado(px - 12, y - 9, w + 24, h + 18, 7), { color: BLANCO, opacity: 0.97 });
     p.drawImage(logo, { x: px, y: H - y - h, width: w, height: h });
   } else {
     const t = limpio((d.empresa.nombre || '').toUpperCase());
@@ -500,7 +505,7 @@ function ponerLogo(ctx, p, { x, y, alto, maxAncho, derecha = false }, logo) {
 }
 
 /** Descarga una imagen y la prepara para el PDF (JPEG si es opaca, PNG si tiene transparencia o es un círculo). */
-async function incrustar(doc, url, { circulo = false, max = 1600 } = {}) {
+async function incrustar(doc, url, { circulo = false, max = 1600, logo = false } = {}) {
   if (!url) return null;
   try {
     const img = await cargar(url);
@@ -526,9 +531,11 @@ async function incrustar(doc, url, { circulo = false, max = 1600 } = {}) {
     c.width = Math.round(iw * e);
     c.height = Math.round(ih * e);
     g.drawImage(img, 0, 0, c.width, c.height);
-    const png = tieneTransparencia(img, iw, ih);
+    const png = logo || tieneTransparencia(img, iw, ih);
     const bytes = await aBytes(c, png ? 'image/png' : 'image/jpeg');
-    return png ? doc.embedPng(bytes) : doc.embedJpg(bytes);
+    const emb = png ? await doc.embedPng(bytes) : await doc.embedJpg(bytes);
+    if (logo) emb.tnmClaro = esClaro(c);
+    return emb;
   } catch (e) {
     console.warn('Ficha PDF: no se pudo usar la imagen', url, e);
     return null;
@@ -554,7 +561,15 @@ async function cargar(url) {
   const img = new Image();
   if (!url.startsWith('data:')) {
     // Se pide como blob: así el lienzo no queda «contaminado» y se puede exportar (mismo dominio o con CORS).
-    const r = await fetch(url, { credentials: 'same-origin' });
+    let r;
+    try {
+      r = await fetch(url, { credentials: 'same-origin' });
+    } catch (e) {
+      // Otro dominio sin permiso (p. ej. www.tecnotron.es visto desde tecnotron.es): el mismo archivo en este dominio
+      const u = new URL(url, location.href);
+      if (u.origin === location.origin) throw e;
+      r = await fetch(location.origin + u.pathname + u.search, { credentials: 'same-origin' });
+    }
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     url = URL.createObjectURL(await r.blob());
   }
@@ -565,6 +580,30 @@ async function cargar(url) {
 
 function aBytes(canvas, tipo) {
   return new Promise((ok, ko) => canvas.toBlob(b => (b ? b.arrayBuffer().then(buf => ok(new Uint8Array(buf))) : ko(new Error('toBlob'))), tipo, 0.9));
+}
+
+/** ¿El logo es claro (blanco o casi)? Se mira la luminosidad media de sus píxeles visibles. */
+function esClaro(canvas) {
+  try {
+    const w = Math.min(200, canvas.width);
+    const h = Math.max(1, Math.round((w * canvas.height) / canvas.width));
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    const g = c.getContext('2d', { willReadFrequently: true });
+    g.drawImage(canvas, 0, 0, w, h);
+    const px = g.getImageData(0, 0, w, h).data;
+    let suma = 0;
+    let n = 0;
+    for (let i = 0; i < px.length; i += 4) {
+      if (px[i + 3] < 128) continue;
+      suma += (0.2126 * px[i] + 0.7152 * px[i + 1] + 0.0722 * px[i + 2]) / 255;
+      n++;
+    }
+    return n > 0 && suma / n > 0.8;
+  } catch {
+    return false;
+  }
 }
 
 function tieneTransparencia(img, iw, ih) {

@@ -137,6 +137,20 @@ function tnm_datos_demo( $modelos ) {
 		}
 	}
 
+	// Logo de la ficha PDF: el de Tecnotron, subido a la biblioteca (el de www.tecnotron.es no se puede leer desde otro dominio)
+	$ajustes = get_option( TNM_OPT, array() );
+	$ajustes = is_array( $ajustes ) ? $ajustes : array();
+	if ( empty( $ajustes['pdf_logo'] ) || ! wp_get_attachment_url( $ajustes['pdf_logo'] ) ) {
+		$tmp = wp_tempnam( 'logo-tecnotron.png' );
+		copy( __DIR__ . '/fixtures/logo-tecnotron.png', $tmp );
+		$logo = media_handle_sideload( array( 'name' => 'logo-tecnotron.png', 'tmp_name' => $tmp ), 0 );
+		if ( ! is_wp_error( $logo ) ) {
+			$ajustes['pdf_logo'] = $logo;
+			update_option( TNM_OPT, $ajustes );
+			echo "✓ logo de la ficha PDF\n";
+		}
+	}
+
 	flush_rewrite_rules();
 	echo 'Catálogo: ', get_post_type_archive_link( TNM_CPT ), "\n";
 }

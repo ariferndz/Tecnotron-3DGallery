@@ -1,7 +1,7 @@
 === Tecnotron Máquinas ===
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 
 Catálogo de máquinas con ficha técnica, carrusel de imágenes, visor 3D con realidad aumentada (model-viewer), QR, fichas PDF y solicitudes de presupuesto.
@@ -31,6 +31,10 @@ Catálogo de máquinas con ficha técnica, carrusel de imágenes, visor 3D con r
 * pdf-lib 1.17.1 (MIT): dentro de assets/vendor/ficha-pdf.js, la ficha técnica en PDF
 
 == Cambios ==
+= 1.3.0 =
+* Temas con cabecera fija (Impreza en tecnotron.es y cualquier otro): la ficha y el catálogo empiezan debajo de la cabecera, y la barra de filtros y los anclajes (#contacto) se quedan justo debajo al bajar.
+* Ficha técnica en PDF: logo de Tecnotron por defecto (Ajustes → dirección del logo), sobre placa blanca de esquinas redondeadas; los logos blancos se detectan y van sin placa.
+
 = 1.2.0 =
 * Ficha técnica en PDF de verdad: dos páginas A4 con diseño propio (fondo, franjas, portada con foto y detalle, características con iconos y dibujo de dimensiones) que se descarga al momento. Color, logo y datos de contacto en Ajustes.
 * La ficha abre en «3D · AR» cuando la máquina tiene modelo, con «Imágenes» al lado; sin modelo sólo aparece «Imágenes».

@@ -32,7 +32,12 @@
 .tnm :focus-visible:not(#tnm){outline:2px solid var(--tnm-accent-hi);outline-offset:2px}
 .tnm-sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .tnm-ic{width:1.15em;height:1.15em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em}
-.tnm-main{background:var(--tnm-page-bg,#0d0d10)}
+.tnm-main{background:var(--tnm-page-bg,#0d0d10);padding-top:var(--tnm-compensar,0px)}
+/* Cabecera fija del tema: el catálogo y la ficha empiezan debajo de ella.
+   --tnm-top (lo que tapan arriba la cabecera fija y la barra de administración) y --tnm-compensar
+   los calcula tecnotron-maquinas.js para cualquier tema; Impreza (el de tecnotron.es) ya da su altura en --header-height. */
+.l-header.pos_fixed~.tnm-main{padding-top:var(--header-height,0px)}
+.tnm [id]{scroll-margin-top:calc(var(--tnm-top,0px) + 16px)}
 .tnm-catalogo,.tnm-single{width:min(1240px,100%);margin:0 auto;padding:0 max(20px,env(safe-area-inset-left)) 40px;background:transparent}
 
 /* ---------- botones ---------- */
@@ -61,8 +66,8 @@
 .tnm-stats .tnm-ic{color:var(--tnm-accent-hi)}
 
 /* ---------- filtros ---------- */
-.tnm-toolbar{position:sticky;top:var(--tnm-sticky-top,0);z-index:30;background:rgba(13,13,16,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--tnm-line);padding:12px 0;margin:0 -4px;padding-left:4px;padding-right:4px}
-.admin-bar .tnm-toolbar{top:calc(var(--tnm-sticky-top,0px) + 32px)}
+.tnm-toolbar{position:sticky;top:var(--tnm-top,0px);z-index:30;background:rgba(13,13,16,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--tnm-line);padding:12px 0;margin:0 -4px;padding-left:4px;padding-right:4px}
+.admin-bar .tnm-toolbar{top:var(--tnm-top,32px)}
 .tnm-tb-row{display:flex;gap:10px;align-items:center}
 .tnm-search:not(#tnm){flex:1;display:flex;align-items:center;gap:10px;height:46px;padding:0 16px;border:1px solid var(--tnm-line2);border-radius:999px;background:var(--tnm-bg2);color:var(--tnm-faint);min-width:0;margin:0}
 .tnm-search:focus-within:not(#tnm){border-color:var(--tnm-accent)}
@@ -129,7 +134,7 @@
 .tnm-ficha--pagina{border:1px solid var(--tnm-line);border-radius:24px;overflow:hidden;margin:18px 0 40px;grid-template-rows:auto auto}
 .tnm-f-media{grid-area:media;position:relative;min-height:0;background:radial-gradient(80% 70% at 50% 60%,color-mix(in srgb,var(--c) 16%,transparent),transparent 75%),#101014;border-right:1px solid var(--tnm-line)}
 .tnm-ficha--pagina .tnm-f-media{min-height:560px}
-.tnm-ficha--pagina .tnm-f-stage{position:sticky;top:0;height:min(640px,80vh)}
+.tnm-ficha--pagina .tnm-f-stage{position:sticky;top:var(--tnm-top,0px);height:min(640px,80vh,calc(100vh - var(--tnm-top,0px) - 16px))}
 .tnm-f-tabs{position:absolute;z-index:4;top:14px;left:14px;display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12)}
 .tnm-f-tabs button:not(#tnm){display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border:0;border-radius:999px;background:none;color:var(--tnm-muted);font-size:.72rem;font-weight:700}
 .tnm-f-tabs button[aria-selected=true]:not(#tnm){background:#fff;color:#111}

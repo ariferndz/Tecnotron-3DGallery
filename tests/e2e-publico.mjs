@@ -144,6 +144,31 @@ try {
   }
   await t.close();
 
+  /* ---------- tema con cabecera fija o superpuesta (dev/mu-plugins simula la de Impreza con ?cabecera=) ---------- */
+  const c = vigilar(await navegador.newPage({ viewport: { width: 1280, height: 900 } }), 'cabecera');
+  for (const modo of ['fija', 'absoluta']) {
+    for (const [ruta, primero] of [['/maquinas/diggy/', '.tnm-crumbs'], ['/maquinas/', '.tnm-hero']]) {
+      await c.goto(`${BASE}${ruta}?cabecera=${modo}`);
+      await c.waitForLoadState('load');
+      await c.waitForTimeout(300);
+      const m = await c.evaluate(sel => ({
+        cabecera: Math.round(document.querySelector('header.wp-block-template-part').getBoundingClientRect().bottom),
+        contenido: Math.round(document.querySelector(sel).getBoundingClientRect().top),
+      }), primero);
+      comprobar(m.contenido >= m.cabecera, `la cabecera ${modo} del tema no tapa ${ruta}`, `cabecera hasta ${m.cabecera} px, contenido desde ${m.contenido} px`);
+    }
+  }
+  await c.goto(`${BASE}/maquinas/?cabecera=fija`);
+  await c.waitForLoadState('load');
+  await c.mouse.wheel(0, 1600);
+  await c.waitForTimeout(800);
+  const barra = await c.evaluate(() => ({
+    cabecera: Math.round(document.querySelector('header.wp-block-template-part').getBoundingClientRect().bottom),
+    barra: Math.round(document.querySelector('.tnm-toolbar').getBoundingClientRect().top),
+  }));
+  comprobar(Math.abs(barra.barra - barra.cabecera) <= 1, 'al bajar, la barra de filtros se queda justo debajo de la cabecera fija', `${barra.barra} px / ${barra.cabecera} px`);
+  await c.close();
+
   /* ---------- móvil ---------- */
   const ctx = await navegador.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const m = vigilar(await ctx.newPage(), 'móvil');

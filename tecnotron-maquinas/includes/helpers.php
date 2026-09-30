@@ -34,6 +34,7 @@ function tnm_opt( $key = null ) {
 		// Ficha técnica en PDF
 		'pdf_color'          => '#7c3aed',
 		'pdf_logo'           => 0,
+		'pdf_logo_url'       => 'https://www.tecnotron.es/img/logo.png',
 		'pdf_telefono'       => '',
 		'pdf_email'          => '',
 		'pdf_web'            => '',

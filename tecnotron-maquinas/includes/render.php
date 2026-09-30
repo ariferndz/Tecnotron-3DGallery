@@ -367,7 +367,11 @@ function tnm_pdf_datos( $m, $desc ) {
 			'nota'     => $note,
 		);
 	}
-	$logo = (int) tnm_opt( 'pdf_logo' ) ?: (int) get_theme_mod( 'custom_logo' );
+	$logo = (int) tnm_opt( 'pdf_logo' );
+	$logo = $logo ? wp_get_attachment_image_url( $logo, 'medium_large' ) : '';
+	if ( ! $logo ) {
+		$logo = tnm_opt( 'pdf_logo_url' ) ?: ( get_theme_mod( 'custom_logo' ) ? wp_get_attachment_image_url( (int) get_theme_mod( 'custom_logo' ), 'medium_large' ) : '' );
+	}
 	$web  = trim( (string) tnm_opt( 'pdf_web' ) ) ?: wp_parse_url( home_url(), PHP_URL_HOST );
 	return array(
 		'archivo'     => 'ficha-tecnica-' . $m['slug'] . '.pdf',
@@ -383,7 +387,7 @@ function tnm_pdf_datos( $m, $desc ) {
 		'color'       => tnm_opt( 'pdf_color' ),
 		'empresa'     => array(
 			'nombre'    => get_bloginfo( 'name' ),
-			'logo'      => $logo ? wp_get_attachment_image_url( $logo, 'medium_large' ) : '',
+			'logo'      => tnm_url_mismo_sitio( (string) $logo ),
 			'telefono'  => tnm_opt( 'pdf_telefono' ),
 			'email'     => tnm_opt( 'pdf_email' ),
 			'web'       => $web,
@@ -391,6 +395,24 @@ function tnm_pdf_datos( $m, $desc ) {
 		),
 		'iconos'      => array_intersect_key( $paths, array_flip( array( 'phone', 'mail', 'globe', 'pin' ) ) ) + array( 'categoria' => $paths[ $m['cat']['icono'] ] ?? $paths['cube'] ),
 	);
+}
+
+/**
+ * Si la dirección es de este mismo sitio (con o sin «www»), la deja relativa: el navegador la pide al dominio
+ * por el que se está viendo la web y no hace falta permiso entre dominios (CORS) para leerla desde JavaScript.
+ *
+ * @param string $url Dirección.
+ * @return string
+ */
+function tnm_url_mismo_sitio( $url ) {
+	$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+	$home = strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+	if ( $host && preg_replace( '/^www\./', '', $host ) === preg_replace( '/^www\./', '', $home ) ) {
+		$ruta = (string) wp_parse_url( $url, PHP_URL_PATH );
+		$q    = (string) wp_parse_url( $url, PHP_URL_QUERY );
+		return $ruta . ( $q ? '?' . $q : '' );
+	}
+	return $url;
 }
 
 /**

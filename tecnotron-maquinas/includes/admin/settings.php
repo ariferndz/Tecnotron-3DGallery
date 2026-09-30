@@ -38,6 +38,7 @@ add_action(
 						'contacto_texto'  => sanitize_textarea_field( $in['contacto_texto'] ?? '' ),
 						'pdf_color'       => sanitize_hex_color( $in['pdf_color'] ?? '' ) ?: '#7c3aed',
 						'pdf_logo'        => absint( $in['pdf_logo'] ?? 0 ),
+						'pdf_logo_url'    => esc_url_raw( trim( (string) ( $in['pdf_logo_url'] ?? '' ) ) ),
 						'pdf_telefono'    => sanitize_text_field( $in['pdf_telefono'] ?? '' ),
 						'pdf_email'       => sanitize_email( $in['pdf_email'] ?? '' ),
 						'pdf_web'         => sanitize_text_field( $in['pdf_web'] ?? '' ),
@@ -86,12 +87,15 @@ function tnm_settings_page() {
 			<table class="form-table" role="presentation">
 				<tr><th><label for="tnm-pdf-color">Color</label></th><td><input id="tnm-pdf-color" type="color" name="<?php echo esc_attr( $n ); ?>[pdf_color]" value="<?php echo esc_attr( $o['pdf_color'] ); ?>"><p class="description">Franjas, título y los círculos de las características.</p></td></tr>
 				<tr><th>Logo</th><td>
-					<?php $logo = (int) $o['pdf_logo'] ?: (int) get_theme_mod( 'custom_logo' ); ?>
+					<?php $logo = (int) $o['pdf_logo']; ?>
 					<input type="hidden" name="<?php echo esc_attr( $n ); ?>[pdf_logo]" value="<?php echo (int) $o['pdf_logo'] ?: ''; ?>" data-tnm-logo-id>
 					<span class="tnm-logo-prev" data-tnm-logo-prev><?php echo $logo ? wp_get_attachment_image( $logo, 'medium' ) : ''; ?></span>
 					<button type="button" class="button" data-tnm-logo-pick>Elegir logo</button>
 					<button type="button" class="button-link-delete" data-tnm-logo-clear<?php echo $o['pdf_logo'] ? '' : ' hidden'; ?>>Quitar</button>
-					<p class="description">PNG o SVG, mejor con fondo transparente. Sin logo se usa el del tema (Apariencia → Personalizar) o, si no hay, el nombre del sitio.</p></td></tr>
+					<p class="description">PNG o SVG, mejor con fondo transparente. Tiene prioridad sobre la dirección de abajo.</p>
+					<p><label>O dirección del logo<br><input class="regular-text code" type="url" name="<?php echo esc_attr( $n ); ?>[pdf_logo_url]" value="<?php echo esc_attr( $o['pdf_logo_url'] ); ?>" placeholder="https://www.tecnotron.es/img/logo.png"></label></p>
+					<?php if ( ! $logo && $o['pdf_logo_url'] ) : ?><p class="tnm-logo-prev"><img src="<?php echo esc_url( $o['pdf_logo_url'] ); ?>" alt="Logo actual"></p><?php endif; ?>
+					<p class="description">Mejor en su versión oscura: va sobre una placa blanca (un logo blanco se detecta y se pone sin placa). Sin logo se usa el del tema o, si no hay, el nombre del sitio.</p></td></tr>
 				<tr><th><label for="tnm-pdf-tel">Teléfono</label></th><td><input id="tnm-pdf-tel" class="regular-text" name="<?php echo esc_attr( $n ); ?>[pdf_telefono]" value="<?php echo esc_attr( $o['pdf_telefono'] ); ?>" placeholder="p. ej. +34 900 000 000"></td></tr>
 				<tr><th><label for="tnm-pdf-email">Correo</label></th><td><input id="tnm-pdf-email" class="regular-text" type="email" name="<?php echo esc_attr( $n ); ?>[pdf_email]" value="<?php echo esc_attr( $o['pdf_email'] ); ?>" placeholder="p. ej. info@tecnotron.es"></td></tr>
 				<tr><th><label for="tnm-pdf-web">Web</label></th><td><input id="tnm-pdf-web" class="regular-text" name="<?php echo esc_attr( $n ); ?>[pdf_web]" value="<?php echo esc_attr( $o['pdf_web'] ); ?>" placeholder="<?php echo esc_attr( wp_parse_url( home_url(), PHP_URL_HOST ) ); ?>"></td></tr>

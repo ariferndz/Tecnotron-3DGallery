@@ -354,6 +354,59 @@
     });
   }
 
+  /* ---------- cabecera fija del tema: que no tape el catálogo, la ficha ni la barra de filtros ---------- */
+  function initCabecera() {
+    const main = document.querySelector('.tnm-main');
+    const raiz = document.documentElement;
+    const SELECTORES = 'header, [role="banner"], #masthead, .site-header, .l-header, .elementor-location-header';
+    // Hasta dónde tapan (en px desde arriba) los elementos del tema pegados al borde superior de la ventana.
+    // Con alCargar también cuentan las cabeceras «absolute» que se superponen al principio de la página.
+    function tapa(alCargar) {
+      const barra = document.getElementById('wpadminbar');
+      let fondo = barra && getComputedStyle(barra).position === 'fixed' ? barra.getBoundingClientRect().bottom : 0;
+      const tope = fondo + 4;
+      const vistos = new Set();
+      const candidatos = [...document.querySelectorAll(SELECTORES)];
+      for (const y of [tope, 2]) for (const x of [8, innerWidth / 2, innerWidth - 8]) candidatos.push(...document.elementsFromPoint(x, y));
+      for (let n of candidatos) {
+        for (; n && n !== document.body && n !== raiz; n = n.parentElement) {
+          if (vistos.has(n)) break;
+          vistos.add(n);
+          if (n.closest('.tnm') || (main && n.contains(main))) continue;
+          const pos = getComputedStyle(n).position;
+          if (pos !== 'fixed' && pos !== 'sticky' && !(alCargar && pos === 'absolute')) continue;
+          const r = n.getBoundingClientRect();
+          const arriba = pos === 'absolute' ? r.top + scrollY : r.top;
+          if (r.height > 0 && arriba <= tope && r.width >= innerWidth * 0.5 && r.height < innerHeight * 0.4) {
+            fondo = Math.max(fondo, pos === 'absolute' ? r.bottom + scrollY : r.bottom);
+          }
+        }
+      }
+      return Math.round(fondo);
+    }
+    let extra = 0;
+    function compensar() {
+      const primero = main && main.firstElementChild;
+      if (!primero) return;
+      // Dónde empezaría el contenido sin nuestro relleno, y cuánto lo tapa la cabecera
+      const empieza = primero.getBoundingClientRect().top + scrollY - extra;
+      const nuevo = Math.max(0, Math.ceil(tapa(true) - empieza));
+      if (nuevo !== extra) { extra = nuevo; main.style.setProperty('--tnm-compensar', `${extra}px`); }
+    }
+    const medir = () => raiz.style.setProperty('--tnm-top', `${tapa(false)}px`);
+    let frame = 0;
+    let tarde;
+    addEventListener('scroll', () => {
+      if (!frame) frame = requestAnimationFrame(() => { frame = 0; medir(); });
+      clearTimeout(tarde);
+      tarde = setTimeout(medir, 400);                     // las cabeceras que encogen al bajar tienen transición
+    }, { passive: true });
+    addEventListener('resize', () => { medir(); compensar(); });
+    addEventListener('load', () => { medir(); compensar(); });
+    medir();
+    compensar();
+  }
+
   /* ---------- arranque ---------- */
   document.addEventListener('click', e => {
     const add = e.target.closest('[data-tnm-add]');
@@ -368,6 +421,7 @@
     });
     new IntersectionObserver(([en]) => { document.body.classList.toggle('tnm-at-contact', en.isIntersecting); syncSel(); }, { threshold: 0.15 }).observe(c);
   });
+  initCabecera();
   $$('[data-tnm-catalogo]').forEach(initCatalog);
   $$('.tnm-ficha--pagina[data-tnm-ficha]').forEach(a => hydrateFicha(a));
   $$('form[data-tnm-form]').forEach(initForm);
